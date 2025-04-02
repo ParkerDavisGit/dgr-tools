@@ -1,8 +1,0 @@
-[package]
-name = "dgr-lin-parser"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-eyre = "0.6.12"
-hex = "0.4.3"
