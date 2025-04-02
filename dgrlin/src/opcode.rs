@@ -262,7 +262,7 @@ pub enum Op {
 }
 
 impl Op {
-    fn to_hex(&self) -> Vec<u8> {
+    pub fn to_hex(&self) -> Vec<u8> {
         match self {
             Op::Zero { arg1, arg2 } => 
                 vec![112u8, 0u8, *arg1, *arg2],
