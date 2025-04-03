@@ -9,6 +9,7 @@ name = "dgrlin"
 crate-type = ["cdylib"]
 
 [dependencies]
+byteorder = "1.5.0"
 eyre = "0.6.12"
 hex = "0.4.3"
 pyo3 = "0.24.0"
