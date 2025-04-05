@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
 
-
 use std::io::BufReader;
 use std::fs::read;
 use std::fmt;
@@ -13,22 +12,8 @@ use byteorder::{ByteOrder, LittleEndian, BigEndian};
 pub mod opcode;
 use opcode::Opcode;
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn compile(op: String) -> PyResult<String> {
-    if op == "compile" {
-        text_to_byte().unwrap();
-    }
-    else if op == "decompile" {
-        byte_to_text().unwrap();
-    }
-    
-    Ok("Done!".to_string())
-}
-
-
-fn text_to_byte() -> Result<(), eyre::Report> {
-    let f = File::open("data/output.txt")?;
+fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
+    let f = File::open(filename)?;
     let mut reader = BufReader::new(f).lines().flatten();
 
     let mut bytes: Vec<u8> = Vec::new();
@@ -40,7 +25,7 @@ fn text_to_byte() -> Result<(), eyre::Report> {
     println!("Parsed!");
     //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
 
-    let mut file = File::create("output.bin")?;
+    let mut file = File::create("output/output.bin")?;
 
     file.write(&bytes[..]);
     
@@ -49,9 +34,9 @@ fn text_to_byte() -> Result<(), eyre::Report> {
     Ok(())
 }
 
-fn byte_to_text() -> Result<(), eyre::Report> {
+fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     //let mut data = read("data/e00_004_003.bytecode").unwrap().into_iter().peekable();
-    let mut data = read("data/new_output.bin").unwrap().into_iter().peekable();
+    let mut data = read(filename).unwrap().into_iter().peekable();
     let mut ops: Vec<Opcode> = Vec::new();
     let mut idx = 0usize;
 
@@ -149,7 +134,7 @@ fn byte_to_text() -> Result<(), eyre::Report> {
     println!("Parsed!");
     //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
 
-    let mut file = File::create("output.txt")?;
+    let mut file = File::create("output/output.txt")?;
 
     for line in ops {
         write!(file, "{}\n", line);
@@ -160,9 +145,26 @@ fn byte_to_text() -> Result<(), eyre::Report> {
     Ok(())
 }
 
+
+#[pyfunction]
+fn compile(filename: String) -> PyResult<String> {
+    text_to_byte(filename);
+    Ok("Done!".to_string())
+}
+
+
+#[pyfunction]
+fn decompile(filename: String) -> PyResult<String> {
+    byte_to_text(filename);
+    Ok("Done!".to_string())
+}
+
+
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn dgrlin(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(compile, m)?)?;
+    m.add_function(wrap_pyfunction!(decompile, m)?)?;
     Ok(())
 }
