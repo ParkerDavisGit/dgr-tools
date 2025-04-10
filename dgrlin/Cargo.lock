@@ -3,6 +3,12 @@
 version = 4
 
 [[package]]
+name = "arc-swap"
+version = "1.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69f7f8c3906b62b754cd5326047894316021dcfe5a194c8ea52bdd94934a3457"
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -27,7 +33,9 @@ dependencies = [
  "byteorder",
  "eyre",
  "hex",
+ "log",
  "pyo3",
+ "pyo3-log",
  "serde",
 ]
 
@@ -70,6 +78,12 @@ name = "libc"
 version = "0.2.171"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
+
+[[package]]
+name = "log"
+version = "0.4.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "memoffset"
@@ -137,6 +151,17 @@ checksum = "05280526e1dbf6b420062f3ef228b78c0c54ba94e157f5cb724a609d0f2faabc"
 dependencies = [
  "libc",
  "pyo3-build-config",
+]
+
+[[package]]
+name = "pyo3-log"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7079e412e909af5d6be7c04a7f29f6a2837a080410e1c529c9dee2c367383db4"
+dependencies = [
+ "arc-swap",
+ "log",
+ "pyo3",
 ]
 
 [[package]]

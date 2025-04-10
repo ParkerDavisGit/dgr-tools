@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
 
+use log;
+
 use std::io::BufReader;
 use std::fs::read;
 use std::fmt;
@@ -13,32 +15,50 @@ pub mod opcode;
 use opcode::Opcode;
 
 fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
+    log::info!("compiling {}", filename);
+
     let f = File::open(filename)?;
     let mut reader = BufReader::new(f).lines().flatten();
 
+    log::info!("opened file");
+
     let mut bytes: Vec<u8> = Vec::new();
+    let mut text: Vec<String> = Vec::new();
+    let mut text_id: u16 = 0u16;
 
     for line in reader {
-        bytes.append(&mut Opcode::try_from(line).unwrap().to_hex());
+        let try_from_result: (Opcode, Option<String>) = Opcode::try_from_string(line, text_id);
+        bytes.append(&mut try_from_result.0.to_hex());
+        match try_from_result.1 {
+            Some(line) => {
+                log::info!("line printed, {}: {}", text_id, line);
+                text.push(line);
+                text_id += 1;
+            },
+            None => {}
+        }
     }
 
-    println!("Parsed!");
+    log::info!("compiled file");
     //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
 
     let mut file = File::create("output/output.bin")?;
 
     file.write(&bytes[..]);
     
-    println!("Writen!");
+    log::info!("wrote to file");
 
     Ok(())
 }
 
 fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
+    log::info!("decompiling {}", filename);
     //let mut data = read("data/e00_004_003.bytecode").unwrap().into_iter().peekable();
     let mut data = read(filename).unwrap().into_iter().peekable();
     let mut ops: Vec<Opcode> = Vec::new();
     let mut idx = 0usize;
+
+    log::info!("opened file");
 
     loop {
         if data.peek() == None {
@@ -131,7 +151,7 @@ fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
             text_id: None
         })
     }
-    println!("Parsed!");
+    log::info!("decompiled file");
     //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
 
     let mut file = File::create("output/output.txt")?;
@@ -140,7 +160,7 @@ fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         write!(file, "{}\n", line);
     }
     
-    println!("Writen!");
+    log::info!("wrote to file");
 
     Ok(())
 }
@@ -164,6 +184,8 @@ fn decompile(filename: String) -> PyResult<String> {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn dgrlin(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    pyo3_log::init();
+
     m.add_function(wrap_pyfunction!(compile, m)?)?;
     m.add_function(wrap_pyfunction!(decompile, m)?)?;
     Ok(())

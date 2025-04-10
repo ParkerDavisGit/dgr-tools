@@ -5,6 +5,8 @@ use hex::ToHex;
 use std::fs::File;
 use std::io::prelude::*;
 
+use log;
+
 use byteorder::{ByteOrder, LittleEndian, WriteBytesExt};
 
 
@@ -18,36 +20,9 @@ impl Opcode {
     pub fn to_hex(&self) -> Vec<u8> {
         self.hexcode.clone()
     }
-}
-
-impl fmt::Display for Opcode {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}(", self.name);
-
-        if self.hexcode.len() == 2 {
-            write!(f, ")");
-            return Ok(());
-        }
-
-        if self.name == "Text" {
-            write!(f, "{})", self.text_id.unwrap());
-            return Ok(());
-        }
-
-        for idx in 2..(self.hexcode.len()-1) {
-            write!(f, "{}, ", self.hexcode.get(idx).unwrap());
-        }
-
-        write!(f, "{})", self.hexcode.last().unwrap());
-        Ok(())
-    }
-}
 
 
-impl TryFrom<String> for Opcode {
-    type Error = &'static str;
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
+    pub fn try_from_string(value: String, text_id: u16) -> (Self, Option<String>) {
         let mut split_string = value.split("(");
         let opcode_text= split_string.next().unwrap();
 
@@ -56,8 +31,18 @@ impl TryFrom<String> for Opcode {
 
         let args: Vec<u8> = if opcode_text == "Text" {
             let mut temp: Vec<u8> = Vec::new();
-            temp.write_u16::<LittleEndian>(args.as_str().parse::<u16>().unwrap());
-            temp.clone()
+            temp.write_u16::<LittleEndian>(text_id);
+
+            let mut hexcode: Vec<u8> = Vec::new();
+            hexcode.push(112u8);
+            hexcode.push(2u8);
+            hexcode.append(&mut temp);
+
+            return (Opcode {
+                name: "Text".to_string(),
+                hexcode: hexcode,
+                text_id: None
+            }, Some(args.collect()))
         }
         else {
             args
@@ -70,7 +55,6 @@ impl TryFrom<String> for Opcode {
         
         let opcode: u8 = match opcode_text {
             "0x00"             => 0u8,
-            "Text"             => 2u8,
             "TextBoxFormat"    => 3u8,
             "Animation"        => 6u8,
             "Voice"            => 8u8,
@@ -109,10 +93,33 @@ impl TryFrom<String> for Opcode {
         hexcode.push(opcode);
         hexcode.append(&mut args.clone());
 
-        Ok(Opcode {
+        (Opcode {
             name: opcode_text.to_string(),
             hexcode: hexcode,
             text_id: None
-        })
+        }, None)
+    }
+}
+
+impl fmt::Display for Opcode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}(", self.name);
+
+        if self.hexcode.len() == 2 {
+            write!(f, ")");
+            return Ok(());
+        }
+
+        if self.name == "Text" {
+            write!(f, "{})", self.text_id.unwrap());
+            return Ok(());
+        }
+
+        for idx in 2..(self.hexcode.len()-1) {
+            write!(f, "{}, ", self.hexcode.get(idx).unwrap());
+        }
+
+        write!(f, "{})", self.hexcode.last().unwrap());
+        Ok(())
     }
 }
