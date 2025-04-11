@@ -22,7 +22,7 @@ impl Opcode {
     }
 
 
-    pub fn try_from_string(value: String, text_id: u16) -> (Self, Option<String>) {
+    pub fn try_from_string(value: String, text_id: u32) -> (Self, Option<String>) {
         let mut split_string = value.split("(");
         let opcode_text= split_string.next().unwrap();
 
@@ -31,7 +31,7 @@ impl Opcode {
 
         let args: Vec<u8> = if opcode_text == "Text" {
             let mut temp: Vec<u8> = Vec::new();
-            temp.write_u16::<LittleEndian>(text_id);
+            let _ = temp.write_u16::<LittleEndian>(text_id as u16);
 
             let mut hexcode: Vec<u8> = Vec::new();
             hexcode.push(112u8);

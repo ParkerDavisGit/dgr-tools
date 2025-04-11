@@ -9,7 +9,7 @@ use hex::ToHex;
 use std::fs::File;
 use std::io::prelude::*;
 
-use byteorder::{ByteOrder, LittleEndian, BigEndian};
+use byteorder::{ByteOrder, LittleEndian, BigEndian, WriteBytesExt};
 
 pub mod opcode;
 use opcode::Opcode;
@@ -24,20 +24,70 @@ fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
 
     let mut bytes: Vec<u8> = Vec::new();
     let mut text: Vec<String> = Vec::new();
-    let mut text_id: u16 = 0u16;
+    let mut text_id: u32 = 0u32;
 
+    // SECTION 0 [ HEADER ]
+    // 2 0 0 0 16 0 0 0    <- File Identifier
+    // 0 0 0 0  0 0 0 0    <- Buffer to insert needed byte numbers later.
+    bytes.append(&mut vec![2u8, 0u8, 0u8, 0u8, 16u8, 0u8, 0u8, 0u8,
+                           0u8, 0u8, 0u8, 0u8,  0u8, 0u8, 0u8, 0u8]);
+    
+    // SECTION 1 [ OPCODES ]
     for line in reader {
         let try_from_result: (Opcode, Option<String>) = Opcode::try_from_string(line, text_id);
         bytes.append(&mut try_from_result.0.to_hex());
         match try_from_result.1 {
             Some(line) => {
-                log::info!("line printed, {}: {}", text_id, line);
+                log::info!("line {} saved: {}", text_id, line);
                 text.push(line);
                 text_id += 1;
             },
             None => {}
         }
     }
+
+    // SECTION 2 [ TEXT SCRIPT OFFSETS ]
+    // Starts with text.len(), which is text_id at the current moment
+    let mut text_address: u32 = bytes.len() as u32;
+    let mut text_address_vec: Vec<u8> = Vec::new();
+    let _ = text_address_vec.write_u32::<LittleEndian>(text_address);
+    bytes[8] = text_address_vec[0];
+    bytes[9] = text_address_vec[1];
+    bytes[10] = text_address_vec[2];
+    bytes[11] = text_address_vec[3];
+
+    log::debug!("{}", text_address);
+
+    let _ = bytes.write_u32::<LittleEndian>(text_id);
+    
+    bytes.push(255u8);
+    bytes.push(255u8);
+    bytes.push(255u8);
+    bytes.push(255u8);
+    
+    // Then things get weird
+    // Each following 2 bytes are the number of bytes between the start of section 2
+    // 2-byte 0x00 buffers in between entries.
+    // And the corresponding entry in section 3.
+    // Eg. Text(3) calls line 4: "This is a line of dialog"
+    // Sec. 2 starts at 0x007E, 4th line is at 0x017E. 4th Entry in Sec. 2 is '00 10' (Little Endian)
+    
+    for _ in 0..text_id {
+        bytes.push(0u8);
+        bytes.push(0u8);
+    }
+
+    // SECTION 3 [ TEXT SCRIPT ]
+
+
+    // SECTION 0 AGAIN [ ADD BYTE NUMBERS ]
+    let mut text_address_vec: Vec<u8> = Vec::new();
+    let _ = text_address_vec.write_u32::<LittleEndian>(text_address);
+    bytes[12] = text_address_vec[0];
+    bytes[13] = text_address_vec[1];
+    bytes[14] = text_address_vec[2];
+    bytes[15] = text_address_vec[3];
+
 
     log::info!("compiled file");
     //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
