@@ -22,12 +22,21 @@ impl Opcode {
     }
 
 
-    pub fn try_from_string(value: String, text_id: u32) -> (Self, Option<String>) {
+    pub fn try_from_string(value: String, text_id: u32) -> (Option<Self>, Option<String>) {
+        // Brackets and that newline at the end are to be thrown away
+        if value.contains("{") || value.contains("}") || value.len() < 2 {
+            return (None, None);
+        }
+
+        log::debug!("Original: apple {} apple ", value);
+
         let mut split_string = value.split("(");
-        let opcode_text= split_string.next().unwrap();
+        let opcode_text = split_string.next().unwrap();
+        log::debug!("opcode_text: '{}'", opcode_text);
 
         let mut args = split_string.next().unwrap().chars();
         args.next_back(); // Popping off the ending ')'
+
 
         let args: Vec<u8> = if opcode_text == "Text" {
             let mut temp: Vec<u8> = Vec::new();
@@ -38,11 +47,11 @@ impl Opcode {
             hexcode.push(2u8);
             hexcode.append(&mut temp);
 
-            return (Opcode {
+            return (Some(Opcode {
                 name: "Text".to_string(),
                 hexcode: hexcode,
                 text_id: None
-            }, Some(args.collect()))
+            }), Some(args.collect()))
         }
         else {
             args
@@ -51,7 +60,10 @@ impl Opcode {
                 .flat_map(|line| line.trim().parse::<u8>())
                 .collect::<Vec<u8>>()
         };
-        
+
+        for arg in args.clone() {
+            log::debug!("arg: '{}'", arg);
+        }
         
         let opcode: u8 = match opcode_text {
             "0x00"             => 0u8,
@@ -81,8 +93,10 @@ impl Opcode {
             "WaitInput"        => 58u8,
             "WaitFrame"        => 59u8,
             "IfFlagCheck"      => 60u8,
-            badop        => 255u8
+            badop        => 254u8
         };
+
+        log::debug!("{}", opcode);
 
         // if opcode == 999u8 {
         //     return new Error("INVALID OPCODE");
@@ -93,33 +107,33 @@ impl Opcode {
         hexcode.push(opcode);
         hexcode.append(&mut args.clone());
 
-        (Opcode {
+        (Some(Opcode {
             name: opcode_text.to_string(),
             hexcode: hexcode,
             text_id: None
-        }, None)
+        }), None)
     }
 }
 
 impl fmt::Display for Opcode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}(", self.name);
+        let _ = write!(f, "{}(", self.name);
 
         if self.hexcode.len() == 2 {
-            write!(f, ")");
+            let _ = write!(f, ")");
             return Ok(());
         }
 
         if self.name == "Text" {
-            write!(f, "{})", self.text_id.unwrap());
+            let _ = write!(f, "{})", self.text_id.unwrap());
             return Ok(());
         }
 
         for idx in 2..(self.hexcode.len()-1) {
-            write!(f, "{}, ", self.hexcode.get(idx).unwrap());
+            let _ = write!(f, "{}, ", self.hexcode.get(idx).unwrap());
         }
 
-        write!(f, "{})", self.hexcode.last().unwrap());
+        let _ = write!(f, "{})", self.hexcode.last().unwrap());
         Ok(())
     }
 }

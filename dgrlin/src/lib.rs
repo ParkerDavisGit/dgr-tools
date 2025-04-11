@@ -23,7 +23,7 @@ fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     log::info!("opened file");
 
     let mut bytes: Vec<u8> = Vec::new();
-    let mut text: Vec<String> = Vec::new();
+    let mut text_list: Vec<String> = Vec::new();
     let mut text_id: u32 = 0u32;
 
     // SECTION 0 [ HEADER ]
@@ -34,19 +34,37 @@ fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     
     // SECTION 1 [ OPCODES ]
     for line in reader {
-        let try_from_result: (Opcode, Option<String>) = Opcode::try_from_string(line, text_id);
-        bytes.append(&mut try_from_result.0.to_hex());
-        match try_from_result.1 {
-            Some(line) => {
-                log::info!("line {} saved: {}", text_id, line);
-                text.push(line);
-                text_id += 1;
+        let try_from_result: (Option<Opcode>, Option<String>) = Opcode::try_from_string(line, text_id);
+
+        match try_from_result.0 {
+            Some(operation) => {
+                bytes.append(&mut operation.to_hex());
+                match try_from_result.1 {
+                    Some(line) => {
+                        text_list.push(line);
+                        text_id += 1;
+                    },
+                    None => {}
+                }
             },
-            None => {}
+            None => {},
         }
+        return Ok(());
     }
 
     // SECTION 2 [ TEXT SCRIPT OFFSETS ]
+    // First, Buffer to nearest multiple of 16
+    // Extra buffer PROBABLY won't break anything
+    let buffer_amount = if bytes.len() % 16 == 0 {
+        0
+    } else {
+        16 - bytes.len() % 16
+    };
+    
+    for _ in 0..buffer_amount {
+        bytes.push(0u8)
+    }
+
     // Starts with text.len(), which is text_id at the current moment
     let mut text_address: u32 = bytes.len() as u32;
     let mut text_address_vec: Vec<u8> = Vec::new();
@@ -60,22 +78,18 @@ fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
 
     let _ = bytes.write_u32::<LittleEndian>(text_id);
     
-    bytes.push(255u8);
-    bytes.push(255u8);
-    bytes.push(255u8);
-    bytes.push(255u8);
-    
     // Then things get weird
     // Each following 2 bytes are the number of bytes between the start of section 2
     // 2-byte 0x00 buffers in between entries.
     // And the corresponding entry in section 3.
     // Eg. Text(3) calls line 4: "This is a line of dialog"
     // Sec. 2 starts at 0x007E, 4th line is at 0x017E. 4th Entry in Sec. 2 is '00 10' (Little Endian)
-    
-    for _ in 0..text_id {
-        bytes.push(0u8);
-        bytes.push(0u8);
+    let mut offset = text_id * 4u32 + 4u32;
+    for line in text_list {
+        let _ = bytes.write_u32::<LittleEndian>(offset);
+        offset += 2u32 + line.len() as u32;
     }
+    let _ = bytes.write_u32::<LittleEndian>(offset);
 
     // SECTION 3 [ TEXT SCRIPT ]
 
