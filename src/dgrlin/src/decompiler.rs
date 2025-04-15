@@ -164,11 +164,6 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         if data.peek() == Some(&255u8) {
             let _ = (data.next(), data.next());
         }
-        // This else should never be called,
-        // but throwing this here just in case.
-        else {
-            break;
-        }
 
         // Collect each character (2 Bytes) and treat as ascii.
         // This implies the ability to use UTF-8
@@ -202,7 +197,6 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
 
             next_string_chars.into_iter().collect()
         };
-
         text_entries.push(line);
     }
 

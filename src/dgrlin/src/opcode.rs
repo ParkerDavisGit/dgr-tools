@@ -23,11 +23,8 @@ impl Opcode {
             return (None, None);
         }
 
-        log::debug!("Original: apple {} apple ", value);
-
         let mut split_string = value.split("(");
         let opcode_text = split_string.next().unwrap();
-        log::debug!("opcode_text: '{}'", opcode_text);
 
         let mut args = split_string.next().unwrap().chars();
         args.next_back(); // Popping off the ending ')'
@@ -41,6 +38,11 @@ impl Opcode {
             hexcode.push(112u8);
             hexcode.push(2u8);
             hexcode.append(&mut temp);
+            
+            // Text Line strings must be in double quotes, of course
+            if !(args.next_back() == Some('"') && args.next() == Some('"')) {
+                return (None, None)
+            }
 
             return (Some(Opcode {
                 name: "Text".to_string(),
@@ -55,10 +57,6 @@ impl Opcode {
                 .flat_map(|line| line.trim().parse::<u8>())
                 .collect::<Vec<u8>>()
         };
-
-        for arg in args.clone() {
-            log::debug!("arg: '{}'", arg);
-        }
         
         let opcode: u8 = match opcode_text {
             "0x00"             => 0u8,
@@ -90,8 +88,6 @@ impl Opcode {
             "IfFlagCheck"      => 60u8,
             _badop             => 254u8
         };
-
-        log::debug!("{}", opcode);
 
         let mut hexcode: Vec<u8> = Vec::new();
         hexcode.push(112u8);

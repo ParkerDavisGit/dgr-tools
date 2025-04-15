@@ -45,9 +45,10 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
                     None => {}
                 }
             },
+            // One reason this may be called is a lack of double quotes surrounding line
+            // This will be thrown back up to the python window to inform user.
             None => {},
         }
-        return Ok(());
     }
 
     // SECTION 2 [ TEXT SCRIPT OFFSETS ]
@@ -72,9 +73,45 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     bytes[10] = text_address_vec[2];
     bytes[11] = text_address_vec[3];
 
-    log::debug!("{}", text_address);
-
     let _ = bytes.write_u32::<LittleEndian>(text_id);
+
+    let hexed_text_lines: Vec<Vec<u8>> = 
+        text_list
+            .into_iter()
+            .map(|line: String| {
+                let mut line_in_hex: Vec<u8> = Vec::new();
+                let mut chars = line.chars();
+                loop {
+                    let c = chars.next();
+                    match c {
+                        None => {
+                            break;
+                        },
+                        Some('\\') => match chars.next() {
+                            Some('n') => { 
+                                line_in_hex.push(10u8);
+                                line_in_hex.push(0u8);
+                            },
+                            Some(c3) => {
+                                line_in_hex.push('\\' as u8);
+                                line_in_hex.push(0u8);
+                                line_in_hex.push(c3 as u8);
+                                line_in_hex.push(0u8);
+                            }
+                            None => {}
+                        },
+                        Some(the_char) => {
+                            line_in_hex.push(the_char as u8);
+                            line_in_hex.push(0u8);
+                        }
+                    }
+                }
+                line_in_hex.push(0u8);
+                line_in_hex.push(0u8);
+                line_in_hex
+            }
+            )
+            .collect();
     
     // Then things get weird
     // Each following 2 bytes are the number of bytes between the start of section 2
@@ -82,19 +119,24 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     // And the corresponding entry in section 3.
     // Eg. Text(3) calls line 4: "This is a line of dialog"
     // Sec. 2 starts at 0x007E, 4th line is at 0x017E. 4th Entry in Sec. 2 is '00 10' (Little Endian)
-    let mut offset = text_id * 4u32 + 4u32;
-    for line in text_list {
+    let mut offset = text_id * 4u32 + 8u32;
+    for hex_line in hexed_text_lines.clone() {
         let _ = bytes.write_u32::<LittleEndian>(offset);
-        offset += 2u32 + line.len() as u32;
+        offset += 2u32 + (hex_line.len() as u32);
     }
     let _ = bytes.write_u32::<LittleEndian>(offset);
 
     // SECTION 3 [ TEXT SCRIPT ]
+    for mut hex_line in hexed_text_lines {
+        bytes.push(255u8);
+        bytes.push(254u8);
 
+        bytes.append(&mut hex_line);
+    }
 
     // SECTION 0 AGAIN [ ADD BYTE NUMBERS ]
     let mut text_address_vec: Vec<u8> = Vec::new();
-    let _ = text_address_vec.write_u32::<LittleEndian>(text_address);
+    let _ = text_address_vec.write_u32::<LittleEndian>(bytes.len() as u32);
     bytes[12] = text_address_vec[0];
     bytes[13] = text_address_vec[1];
     bytes[14] = text_address_vec[2];
