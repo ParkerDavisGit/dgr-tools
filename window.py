@@ -61,7 +61,7 @@ class Window:
             self.logger.info("opening file dialog")
             filename = tkinter.filedialog.askopenfilename(initialdir = "./data",
                                             title = "Select a binary!",
-                                            filetypes = (("Binary files", "*.bin*"),
+                                            filetypes = (("Linary files", "*.lin*"),
                                                         ("Binary files", "*.bin*")))   
             
             if filename == "":

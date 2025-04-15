@@ -1,13 +1,8 @@
-use std::io::BufReader;
-use std::fs::read;
 use std::fmt;
-use hex::ToHex;
-use std::fs::File;
-use std::io::prelude::*;
 
 use log;
 
-use byteorder::{ByteOrder, LittleEndian, WriteBytesExt};
+use byteorder::{LittleEndian, WriteBytesExt};
 
 
 pub struct Opcode {
@@ -93,7 +88,7 @@ impl Opcode {
             "WaitInput"        => 58u8,
             "WaitFrame"        => 59u8,
             "IfFlagCheck"      => 60u8,
-            badop        => 254u8
+            _badop        => 254u8
         };
 
         log::debug!("{}", opcode);
