@@ -88,14 +88,10 @@ impl Opcode {
             "WaitInput"        => 58u8,
             "WaitFrame"        => 59u8,
             "IfFlagCheck"      => 60u8,
-            _badop        => 254u8
+            _badop             => 254u8
         };
 
         log::debug!("{}", opcode);
-
-        // if opcode == 999u8 {
-        //     return new Error("INVALID OPCODE");
-        // }
 
         let mut hexcode: Vec<u8> = Vec::new();
         hexcode.push(112u8);

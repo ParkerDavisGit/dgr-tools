@@ -28,6 +28,9 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
                            0u8, 0u8, 0u8, 0u8,  0u8, 0u8, 0u8, 0u8]);
     
     // SECTION 1 [ OPCODES ]
+    // Mainly just take each line and see what sticks.
+    // TODO: stop and tell python when something doesn't work here
+    // I WANT LINE NUMBERS HERE
     for line in reader {
         let try_from_result: (Option<Opcode>, Option<String>) = Opcode::try_from_string(line, text_id);
 
@@ -99,10 +102,10 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
 
 
     log::info!("compiled file");
-    //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
 
+    // And write to file
+    // Luckily, this one is handled well
     let mut file = File::create("output/output.bin")?;
-
     let _ = file.write(&bytes[..]);
     
     log::info!("wrote to file");

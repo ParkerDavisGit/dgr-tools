@@ -18,7 +18,6 @@ fn decompile(filename: String) -> PyResult<String> {
 }
 
 
-/// A Python module implemented in Rust.
 #[pymodule]
 fn dgrlin(m: &Bound<'_, PyModule>) -> PyResult<()> {
     pyo3_log::init();

@@ -32,7 +32,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     }
     let _ = (data.next(), data.next(), data.next());
 
-    // I don't think I need the addresses provided here
+    // I shouldn't need the addresses provided here
     let _ = (data.next(), data.next(), data.next(), data.next());
     let _ = (data.next(), data.next(), data.next(), data.next());
 
@@ -87,6 +87,9 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
             }
         };
 
+        // Special Cases
+        // Check Flag A and B can have different numbers of arguments.
+        // There is a pattern, but more research needed for confirmation.
         if opcode_info.0 == "CheckFlagA" {
             let mut temp_hex_vec: Vec<u8> = vec![112u8, 0u8];
 
@@ -103,6 +106,8 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
             continue;
         }
 
+        // Text's argument is the array index of it's corresponding line of text
+        // Stored at end of file, grabbed later.
         if opcode_info.0 == "Text" {
             let mut temp_hex_vec: Vec<u8> = vec![112u8, 0u8];
 
@@ -119,6 +124,9 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
             continue;
         }
 
+        // Get the hex values
+        // I'm realizing there are some redundancies here.
+        // Might need refactoring
         let mut temp_hex_vec: Vec<u8> = vec![112u8, 0u8];
 
         for _ in 0..opcode_info.1 {
@@ -133,6 +141,8 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     }
 
     // SECTION 2 [ SKIP ALL THE LINE ADDRESS DATA ]
+    // Don't really need this to read the text
+    // Recalculated when compiling back into hex
     loop {
         // This section ends with [0xFF, 0xFE]
         if data.next() == Some(255u8) { 
@@ -143,7 +153,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     }
 
     // SECTION 3 [ THE TEXT SCRIPT ]
-    // Each text line ends with [0x00, 0x00, 0xFF, 0xFE]
+    // Lines of text are null-terminated strings seperated by [0xFF, 0xFE]
     let mut text_entries: Vec<String> = Vec::new();
     loop {
         if data.peek() == None {
@@ -154,7 +164,15 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         if data.peek() == Some(&255u8) {
             let _ = (data.next(), data.next());
         }
+        // This else should never be called,
+        // but throwing this here just in case.
+        else {
+            break;
+        }
 
+        // Collect each character (2 Bytes) and treat as ascii.
+        // This implies the ability to use UTF-8
+        // More research needed
         let line: String = {
             let mut next_string_chars: Vec<char> = Vec::new();
 
@@ -163,7 +181,8 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
                 let extra: u8 = data.next().unwrap();
                 
                 // BACKSLASH
-                // Checking for newline
+                // Newlines should be written in plaintext
+                // Converted back into 0x0A when compiling.
                 if next_char == 10u8 {
                     next_string_chars.push('\\');
                     next_string_chars.push('n');
@@ -187,15 +206,13 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         text_entries.push(line);
     }
 
-    // for line in text_entries.clone() {
-    //     println!("{}", line);
-    // }
-
     log::info!("decompiled file");
-    //let ops: Vec<Result<Op, &'static str>> = ops.into_iter().flatten().collect();
 
     let mut file = File::create("output/output.txt")?;
 
+    // AND write it all down
+    // Many many unhandled results here, being thrown out by 'let _ ='
+    // Fix this
     for line in ops {
         match line.name.as_str() {
             "Text" => {
