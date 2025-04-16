@@ -2,7 +2,7 @@ use std::fmt;
 
 use log;
 
-use byteorder::{LittleEndian, WriteBytesExt};
+use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
 
 
 pub struct Opcode {
@@ -17,7 +17,9 @@ impl Opcode {
     }
 
 
-    pub fn try_from_string(value: String, text_id: u32) -> (Option<Self>, Option<String>) {
+    pub fn try_from_string(raw_value: String, text_id: u32) -> (Option<Self>, Option<String>) {
+        let value = raw_value.trim();
+
         // Brackets and that newline at the end are to be thrown away
         if value.contains("{") || value.contains("}") || value.len() < 2 {
             return (None, None);
@@ -32,7 +34,7 @@ impl Opcode {
 
         let args: Vec<u8> = if opcode_text == "Text" {
             let mut temp: Vec<u8> = Vec::new();
-            let _ = temp.write_u16::<LittleEndian>(text_id as u16);
+            let _ = temp.write_u16::<BigEndian>(text_id as u16);
 
             let mut hexcode: Vec<u8> = Vec::new();
             hexcode.push(112u8);
@@ -86,7 +88,10 @@ impl Opcode {
             "WaitInput"        => 58u8,
             "WaitFrame"        => 59u8,
             "IfFlagCheck"      => 60u8,
-            _badop             => 254u8
+            _badop             => {
+                log::error!("INVALID OPCODE - {}", value);
+                254u8
+            }
         };
 
         let mut hexcode: Vec<u8> = Vec::new();

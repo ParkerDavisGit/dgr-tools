@@ -205,10 +205,71 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     let mut file = File::create("output/output.txt")?;
 
     // AND write it all down
+    let mut indentation_level = 0usize;
+    let mut flag_check: bool  = false;
+    let mut in_choice_text: bool = false;
+
     // Many many unhandled results here, being thrown out by 'let _ ='
     // Fix this
     for line in ops {
+        // Flag check runs the next line only if it passes
+        if flag_check {
+            let _ = write!(file, "{}{{\n"  , "    ".repeat(indentation_level));
+            let _ = write!(file, "{}{}\n"  , "    ".repeat(indentation_level+1), line);
+            let _ = write!(file, "{}}}\n"  , "    ".repeat(indentation_level));
+            flag_check = false;
+            continue;
+        }
+        
         match line.name.as_str() {
+            "CheckCharacter" => {
+                while indentation_level > 0 {
+                    indentation_level -= 1;
+                    let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                    in_choice_text = false;
+                }
+                
+                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
+                let _ = write!(file, "{}{{\n", "    ".repeat(indentation_level));
+
+                indentation_level += 1;
+            }
+            "CheckObject" => {
+                while indentation_level > 0 {
+                    indentation_level -= 1;
+                    let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                    in_choice_text = false;
+                }
+
+                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
+                let _ = write!(file, "{}{{\n", "    ".repeat(indentation_level));
+
+                indentation_level += 1;
+            }
+            "IfFlagCheck" => {
+                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
+                flag_check = true;
+            }
+
+            "SetChoiceText" => {
+                // if indentation_level != 0 {
+                //     indentation_level -= 1;
+                //     let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                // }
+                
+                if in_choice_text {
+                    indentation_level -= 1;
+                    let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                }
+                else {
+                    in_choice_text = true;
+                }
+
+                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
+                let _ = write!(file, "{}{{\n", "    ".repeat(indentation_level));
+                indentation_level += 1;
+            }
+
             "Text" => {
                 let output = text_entries.get(line.text_id.unwrap() as usize);
                 match output {
@@ -216,13 +277,21 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
                         log::error!("Text line with id '{}' not found.", line.text_id.unwrap());
                         continue;
                     }
-                    _ => { let _ = write!(file, "Text(\"{}\")\n", output.unwrap()); }
+                    _ => { let _ = write!(
+                        file, "{}Text(\"{}\")\n", 
+                        "    ".repeat(indentation_level), 
+                        output.unwrap()); 
+                    }
                 }
             }
             _ => {
-                let _ = write!(file, "{}\n", line);
+                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
             }
         }
+    }
+
+    if indentation_level > 0 {
+        let _ = write!(file, "}}\n");
     }
     
     log::info!("wrote to file");
