@@ -2,7 +2,7 @@ use std::fmt;
 
 use log;
 
-use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
+use byteorder::{BigEndian, WriteBytesExt};
 
 
 pub struct Opcode {

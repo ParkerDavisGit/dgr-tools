@@ -172,13 +172,18 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
             let mut next_string_chars: Vec<char> = Vec::new();
 
             loop {
-                let next_char: u8 = data.next().unwrap();
-                let extra: u8 = data.next().unwrap();
+                let next_char: char = 
+                    String::from_utf16(
+                        &[LittleEndian::read_u16(&[data.next().unwrap(), data.next().unwrap()])]
+                    ).unwrap().chars().next().unwrap();
                 
-                // BACKSLASH
-                // Newlines should be written in plaintext
-                // Converted back into 0x0A when compiling.
-                if next_char == 10u8 {
+                // let next_char: u8 = data.next().unwrap();
+                // let extra: u8 = data.next().unwrap();
+                
+                // // BACKSLASH
+                // // Newlines should be written in plaintext
+                // // Converted back into 0x0A when compiling.
+                if next_char == 10u8 as char {
                     next_string_chars.push('\\');
                     next_string_chars.push('n');
                     continue;
@@ -186,10 +191,8 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
 
                 // NULL Character
                 // Ends the line
-                if next_char == 0u8 {
-                    if extra == 0u8 {
-                        break;
-                    }
+                if next_char == 0u8 as char {
+                    break;
                 }
 
                 next_string_chars.push(next_char as char);

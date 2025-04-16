@@ -4,7 +4,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::io::prelude::*;
 
-use byteorder::{ByteOrder, LittleEndian, BigEndian, WriteBytesExt};
+use byteorder::{LittleEndian, WriteBytesExt};
 
 use crate::opcode::Opcode;
 
@@ -65,7 +65,7 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     }
 
     // Starts with text.len(), which is text_id at the current moment
-    let mut text_address: u32 = bytes.len() as u32;
+    let text_address: u32 = bytes.len() as u32;
     let mut text_address_vec: Vec<u8> = Vec::new();
     let _ = text_address_vec.write_u32::<LittleEndian>(text_address);
     bytes[8] = text_address_vec[0];
@@ -89,20 +89,16 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
                         },
                         Some('\\') => match chars.next() {
                             Some('n') => { 
-                                line_in_hex.push(10u8);
-                                line_in_hex.push(0u8);
+                                let _ = line_in_hex.write_u16::<LittleEndian>(0x0A);
                             },
                             Some(c3) => {
-                                line_in_hex.push('\\' as u8);
-                                line_in_hex.push(0u8);
-                                line_in_hex.push(c3 as u8);
-                                line_in_hex.push(0u8);
+                                let _ = line_in_hex.write_u16::<LittleEndian>('\\' as u16);
+                                let _ = line_in_hex.write_u16::<LittleEndian>(c3 as u16);
                             }
                             None => {}
                         },
                         Some(the_char) => {
-                            line_in_hex.push(the_char as u8);
-                            line_in_hex.push(0u8);
+                            let _ = line_in_hex.write_u16::<LittleEndian>(the_char as u16);
                         }
                     }
                 }
