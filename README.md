@@ -1,4 +1,4 @@
-# DGR LIN PARSER
+# DanGanRonpa Tools
 This is a program designed to allow easy script editing for the video game Danganronpa, by quickly decompiling and recompiling the script files.
 
 ## Installation
