@@ -10,7 +10,7 @@ use byteorder::{ByteOrder, LittleEndian, BigEndian};
 use crate::opcode::Opcode;
 
 
-pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
+pub fn byte_to_text(filename: String) -> eyre::Result<()> {
     log::info!("decompiling {}", filename);
     //let mut data = read("data/e00_004_003.bytecode").unwrap().into_iter().peekable();
     let mut data = read(filename).unwrap().into_iter().peekable();
@@ -20,13 +20,13 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     log::info!("opened file");
 
     // SECTION 0 [ HEADER ]
-    if data.next() != Some(2u8) {
+    if data.next() != Some(0x02) {
         log::error!("Not a valid .lin file");
-        return Ok(())
+        //return Err(eyre::Report::new(""));
     }
     let _ = (data.next(), data.next(), data.next());
 
-    if data.next() != Some(16u8) {
+    if data.next() != Some(0x10) {
         log::error!("Not a valid .lin file");
         return Ok(())
     }
@@ -41,7 +41,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         if data.peek() == None { // .lin with no text
             break;
         }
-        if data.peek() != Some(&112u8) { // Text Begins
+        if data.peek() != Some(&0x70) { // Text Begins
             break;
         }
 
@@ -91,9 +91,9 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         // Check Flag A and B can have different numbers of arguments.
         // There is a pattern, but more research needed for confirmation.
         if opcode_info.0 == "CheckFlagA" {
-            let mut temp_hex_vec: Vec<u8> = vec![112u8, 0u8];
+            let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
-            while data.peek().unwrap() != &112u8 {
+            while data.peek().unwrap() != &0x70 {
                 temp_hex_vec.push(data.next().unwrap());
             }
 
@@ -109,7 +109,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         // Text's argument is the array index of it's corresponding line of text
         // Stored at end of file, grabbed later.
         if opcode_info.0 == "Text" {
-            let mut temp_hex_vec: Vec<u8> = vec![112u8, 0u8];
+            let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
             temp_hex_vec.push(data.next().unwrap());
             temp_hex_vec.push(data.next().unwrap());
@@ -127,7 +127,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         // Get the hex values
         // I'm realizing there are some redundancies here.
         // Might need refactoring
-        let mut temp_hex_vec: Vec<u8> = vec![112u8, 0u8];
+        let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
         for _ in 0..opcode_info.1 {
             temp_hex_vec.push(data.next().unwrap());
@@ -145,8 +145,8 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
     // Recalculated when compiling back into hex
     loop {
         // This section ends with [0xFF, 0xFE]
-        if data.next() == Some(255u8) { 
-            if data.next() == Some(254u8) {
+        if data.next() == Some(0xFF) { 
+            if data.next() == Some(0xFE) {
                 break;
             }
         }
@@ -161,7 +161,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
         }
 
         // Use up the line seperator
-        if data.peek() == Some(&255u8) {
+        if data.peek() == Some(&0xFF) {
             let _ = (data.next(), data.next());
         }
 
@@ -183,7 +183,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
                 // // BACKSLASH
                 // // Newlines should be written in plaintext
                 // // Converted back into 0x0A when compiling.
-                if next_char == 10u8 as char {
+                if next_char == 0x10 as char {
                     next_string_chars.push('\\');
                     next_string_chars.push('n');
                     continue;
@@ -191,7 +191,7 @@ pub fn byte_to_text(filename: String) -> Result<(), eyre::Report> {
 
                 // NULL Character
                 // Ends the line
-                if next_char == 0u8 as char {
+                if next_char == 0x00 as char {
                     break;
                 }
 

@@ -9,7 +9,7 @@ use byteorder::{LittleEndian, WriteBytesExt};
 use crate::opcode::Opcode;
 
 
-pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
+pub fn text_to_byte(filename: String) -> eyre::Result<()> {
     log::info!("compiling {}", filename);
 
     let f = File::open(filename)?;
@@ -24,8 +24,8 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     // SECTION 0 [ HEADER ]
     // 2 0 0 0 16 0 0 0    <- File Identifier
     // 0 0 0 0  0 0 0 0    <- Buffer to insert needed byte numbers later.
-    bytes.append(&mut vec![2u8, 0u8, 0u8, 0u8, 16u8, 0u8, 0u8, 0u8,
-                           0u8, 0u8, 0u8, 0u8,  0u8, 0u8, 0u8, 0u8]);
+    bytes.append(&mut vec![0x02, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00]);
+    bytes.append(&mut vec![0x00; 8]);
     
     // SECTION 1 [ OPCODES ]
     // Mainly just take each line and see what sticks.
@@ -61,17 +61,16 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     };
     
     for _ in 0..buffer_amount {
-        bytes.push(0u8)
+        bytes.push(0x00)
     }
 
     // Starts with text.len(), which is text_id at the current moment
     let text_address: u32 = bytes.len() as u32;
     let mut text_address_vec: Vec<u8> = Vec::new();
     let _ = text_address_vec.write_u32::<LittleEndian>(text_address);
-    bytes[8] = text_address_vec[0];
-    bytes[9] = text_address_vec[1];
-    bytes[10] = text_address_vec[2];
-    bytes[11] = text_address_vec[3];
+
+    // Update Header
+    bytes.splice(8..=11, text_address_vec);
 
     let _ = bytes.write_u32::<LittleEndian>(text_id);
 
@@ -102,8 +101,8 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
                         }
                     }
                 }
-                line_in_hex.push(0u8);
-                line_in_hex.push(0u8);
+                line_in_hex.push(0x00);
+                line_in_hex.push(0x00);
                 line_in_hex
             }
             )
@@ -115,17 +114,17 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     // And the corresponding entry in section 3.
     // Eg. Text(3) calls line 4: "This is a line of dialog"
     // Sec. 2 starts at 0x007E, 4th line is at 0x017E. 4th Entry in Sec. 2 is '00 10' (Little Endian)
-    let mut offset = text_id * 4u32 + 8u32;
+    let mut offset: u32 = text_id * 4 + 8;
     for hex_line in hexed_text_lines.clone() {
         let _ = bytes.write_u32::<LittleEndian>(offset);
-        offset += 2u32 + (hex_line.len() as u32);
+        offset += 2 + (hex_line.len() as u32);
     }
     let _ = bytes.write_u32::<LittleEndian>(offset);
 
     // SECTION 3 [ TEXT SCRIPT ]
     for mut hex_line in hexed_text_lines {
-        bytes.push(255u8);
-        bytes.push(254u8);
+        bytes.push(0xFF);
+        bytes.push(0xFE);
 
         bytes.append(&mut hex_line);
     }
@@ -133,10 +132,9 @@ pub fn text_to_byte(filename: String) -> Result<(), eyre::Report> {
     // SECTION 0 AGAIN [ ADD BYTE NUMBERS ]
     let mut text_address_vec: Vec<u8> = Vec::new();
     let _ = text_address_vec.write_u32::<LittleEndian>(bytes.len() as u32);
-    bytes[12] = text_address_vec[0];
-    bytes[13] = text_address_vec[1];
-    bytes[14] = text_address_vec[2];
-    bytes[15] = text_address_vec[3];
+
+    // Update Header
+    bytes.splice(12..=15, text_address_vec);
 
 
     log::info!("compiled file");

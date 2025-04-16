@@ -1,4 +1,4 @@
-[package]
+    [package]
 name = "dgrlin"
 version = "0.1.0"
 edition = "2024"
@@ -13,6 +13,6 @@ byteorder = "1.5.0"
 eyre = "0.6.12"
 hex = "0.4.3"
 log = "0.4.27"
-pyo3 = "0.24.0"
+pyo3 = { version = "0.24.1", features = ["eyre"] }
 pyo3-log = "0.12.3"
 serde = "1.0.219"

@@ -5,15 +5,15 @@ pub mod compiler;
 pub mod decompiler;
 
 #[pyfunction]
-fn compile(filename: String) -> PyResult<String> {
-    let _ = compiler::text_to_byte(filename);
-    Ok("Done!".to_string())
+fn compile(filename: String) -> eyre::Result<()> {
+    compiler::text_to_byte(filename)?;
+    Ok(())
 }
 
 #[pyfunction]
-fn decompile(filename: String) -> PyResult<String> {
-    let _ = decompiler::byte_to_text(filename);
-    Ok("Done!".to_string())
+fn decompile(filename: String) -> eyre::Result<()> {
+    decompiler::byte_to_text(filename)?;
+    Ok(())
 }
 
 
