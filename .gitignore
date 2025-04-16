@@ -1,6 +1,14 @@
 /src/target
 /src/output
 
+/output
+/target
+
+*/*/output
+*/*/target
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 .pytest_cache/
