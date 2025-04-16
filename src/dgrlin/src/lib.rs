@@ -4,7 +4,6 @@ pub mod opcode;
 pub mod compiler;
 pub mod decompiler;
 
-
 #[pyfunction]
 fn compile(filename: String) -> PyResult<String> {
     let _ = compiler::text_to_byte(filename);
