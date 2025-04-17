@@ -1,3 +1,4 @@
+use eyre::Context;
 use log;
 
 use std::fs::read;
@@ -239,21 +240,27 @@ pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()>
     log::info!("decompiled file");
 
     let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
-    let mut file = File::create(output_folder + "/" + output_filename + ".txt")?;
+    let mut file = File::create(output_folder + "/" + output_filename + ".txt").wrap_err("Output Directory not found")?;
+    
 
     // AND write it all down
     let mut indentation_level = 0usize;
     let mut flag_check: bool  = false;
     let mut in_choice_text: bool = false;
+    let mut line_idx = 1usize;
 
-    // Many many unhandled results here, being thrown out by 'let _ ='
-    // Fix this
+    // Write each opcode down
     for line in ops {
         // Flag check runs the next line only if it passes
         if flag_check {
-            let _ = write!(file, "{}{{\n"  , "    ".repeat(indentation_level));
-            let _ = write!(file, "{}{}\n"  , "    ".repeat(indentation_level+1), line);
-            let _ = write!(file, "{}}}\n"  , "    ".repeat(indentation_level));
+            write!(file, "{}{{\n"  , indent(indentation_level))
+                .wrap_err(format!("Could not write line {}", line_idx))?;
+            write!(file, "{}{}\n"  , indent(indentation_level+1), line)
+                .wrap_err(format!("Could not write line {}", line_idx+1))?;
+            write!(file, "{}}}\n"  , indent(indentation_level))
+                .wrap_err(format!("Could not write line {}", line_idx+2))?;
+
+            line_idx += 3;
             flag_check = false;
             continue;
         }
@@ -262,48 +269,64 @@ pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()>
             "CheckCharacter" => {
                 while indentation_level > 0 {
                     indentation_level -= 1;
-                    let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                    write!(file, "{}}}\n", indent(indentation_level))
+                        .wrap_err(format!("Could not write line {}", line_idx))?;
+                    line_idx += 1;
                     in_choice_text = false;
                 }
                 
-                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
-                let _ = write!(file, "{}{{\n", "    ".repeat(indentation_level));
+                write!(file, "{}{}\n", indent(indentation_level), line)
+                    .wrap_err(format!("Could not write line {}", line_idx))?;
+                write!(file, "{}{{\n", indent(indentation_level))
+                    .wrap_err(format!("Could not write line {}", line_idx+1))?;
 
+                line_idx += 2;
                 indentation_level += 1;
             }
             "CheckObject" => {
                 while indentation_level > 0 {
                     indentation_level -= 1;
-                    let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                    write!(file, "{}}}\n", indent(indentation_level))
+                        .wrap_err(format!("Could not write line {}", line_idx))?;
+
+                    line_idx += 1;
                     in_choice_text = false;
                 }
 
-                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
-                let _ = write!(file, "{}{{\n", "    ".repeat(indentation_level));
-
+                write!(file, "{}{}\n", indent(indentation_level), line)
+                    .wrap_err(format!("Could not write line {}", line_idx))?;
+                write!(file, "{}{{\n", indent(indentation_level))
+                    .wrap_err(format!("Could not write line {}", line_idx+1))?;
+                
+                line_idx += 2;
                 indentation_level += 1;
             }
             "IfFlagCheck" => {
-                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
+                write!(file, "{}{}\n", indent(indentation_level), line)
+                    .wrap_err(format!("Could not write line {}", line_idx))?;
+
+                line_idx += 1;
                 flag_check = true;
             }
 
             "SetChoiceText" => {
-                // if indentation_level != 0 {
-                //     indentation_level -= 1;
-                //     let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
-                // }
-                
                 if in_choice_text {
                     indentation_level -= 1;
-                    let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+                    write!(file, "{}}}\n", indent(indentation_level))
+                        .wrap_err(format!("Could not write line {}", line_idx))?;
+                    
+                    line_idx += 1;
                 }
                 else {
                     in_choice_text = true;
                 }
 
-                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
-                let _ = write!(file, "{}{{\n", "    ".repeat(indentation_level));
+                write!(file, "{}{}\n", indent(indentation_level), line)
+                    .wrap_err(format!("Could not write line {}", line_idx))?;
+                write!(file, "{}{{\n", indent(indentation_level))
+                    .wrap_err(format!("Could not write line {}", line_idx+1))?;
+
+                line_idx += 2;
                 indentation_level += 1;
             }
 
@@ -314,25 +337,36 @@ pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()>
                         log::error!("Text line with id '{}' not found.", line.text_id.unwrap());
                         continue;
                     }
-                    _ => { let _ = write!(
+                    _ => { write!(
                         file, "{}Text(\"{}\")\n", 
-                        "    ".repeat(indentation_level), 
-                        output.unwrap()); 
+                        indent(indentation_level), 
+                        output.unwrap())
+                            .wrap_err(format!("Could not write line {}", line_idx))?;
+
+                        line_idx += 1;
                     }
                 }
             }
             _ => {
-                let _ = write!(file, "{}{}\n", "    ".repeat(indentation_level), line);
+                write!(file, "{}{}\n", indent(indentation_level), line)
+                    .wrap_err(format!("Could not write line {}", line_idx+1))?;
+                line_idx += 1;
             }
         }
     }
 
     while indentation_level > 0 {
         indentation_level -= 1;
-        let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+        let _ = write!(file, "{}}}\n", indent(indentation_level));
     }
     
     log::info!("wrote to file");
 
     Ok(())
+}
+
+
+
+fn indent(amount: usize) -> String {
+    "    ".repeat(amount)
 }

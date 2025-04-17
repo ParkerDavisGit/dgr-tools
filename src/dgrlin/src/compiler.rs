@@ -143,7 +143,7 @@ pub fn text_to_byte(filename: String, output_folder: String) -> eyre::Result<()>
     // And write to file
     // Luckily, this one is handled well
     let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
-    let mut file = File::create(output_folder + "/" + output_filename +".lin").wrap_err("Output Directory not found")?;
+    let mut file = File::create(output_folder + "/" + output_filename + ".lin").wrap_err("Output Directory not found")?;
     let _ = file.write(&bytes[..]);
     
     log::info!("wrote to file");
