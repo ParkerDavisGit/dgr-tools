@@ -69,6 +69,7 @@ impl Opcode {
             "Voice"            => 0x08,
             "Music"            => 0x09,
             "Sound"            => 0x0A,
+            "SoundB"           => 0x0B,
             "AddTruthBullets"  => 0x0C,
             "AddPresents"      => 0x0D,
             "UnlockSkill"      => 0x0E,

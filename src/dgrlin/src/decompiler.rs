@@ -60,6 +60,7 @@ pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()>
             "08" => ("Voice", 5u8),
             "09" => ("Music", 3u8),
             "0a" => ("Sound", 3u8),
+            "0b" => ("SoundB", 2u8),
             "0c" => ("AddTruthBullets", 2u8),
             "0d" => ("AddPresents", 3u8),
             "0e" => ("UnlockSkill", 2u8),
@@ -327,8 +328,8 @@ pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()>
     }
 
     while indentation_level > 0 {
-        let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
         indentation_level -= 1;
+        let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
     }
     
     log::info!("wrote to file");

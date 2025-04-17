@@ -1,0 +1,190 @@
+0x00(9, 0)
+SetLabel(0, 20)
+RunScript(1, 155, 0)
+Music(5, 100, 0)
+CheckFlagB(0, 19, 0, 0, 2)
+IfFlagCheck()
+{
+    GoToLabel(1, 244)
+}
+Sprite(8, 8, 10, 0, 0)
+TrialCamera(8, 0, 103)
+Voice(8, 1, 0, 91, 100)
+Text("When the killer broke the bathroom doorknob, they\ndidn't use anything from your room to do it.\n")
+WaitFrame()
+WaitFrame()
+WaitInput()
+Voice(8, 1, 0, 92, 100)
+Text("So what *did* the killer use?\n")
+WaitFrame()
+WaitInput()
+Sprite(0, 0, 4, 0, 0)
+TrialCamera(0, 0, 29)
+TextBoxFormat(4)
+Text("<CLT 4>What did the killer use to take apart the doorknob...?\n<CLT>")
+WaitFrame()
+TextBoxFormat(0)
+WaitInput()
+GoToLabel(1, 245)
+SetLabel(1, 244)
+Sprite(8, 8, 10, 0, 0)
+TrialCamera(8, 0, 103)
+Voice(8, 1, 0, 93, 100)
+Text("When the killer removed the screws from the doorknob,\nthey didn't use anything from your room to do it.\n")
+WaitFrame()
+WaitFrame()
+WaitInput()
+Sprite(8, 8, 14, 0, 0)
+Voice(8, 1, 0, 94, 100)
+Text("Instead, they must have used something that belonged\nto them.\n")
+WaitFrame()
+WaitFrame()
+WaitInput()
+Sprite(0, 0, 4, 0, 0)
+TrialCamera(0, 0, 29)
+TextBoxFormat(4)
+Text("<CLT 4>They used something of their own to <CLT><CLT 3>remove the\nscrews<CLT><CLT 4>... Could it have been...?\n<CLT>")
+TextBoxFormat(0)
+TextBoxFormat(3)
+WaitFrame()
+TextBoxFormat(0)
+TextBoxFormat(4)
+WaitFrame()
+TextBoxFormat(0)
+WaitInput()
+SetLabel(1, 245)
+Sprite(4, 4, 11, 0, 0)
+TrialCamera(4, 0, 107)
+Sound(0, 25, 100)
+Voice(4, 1, 0, 54, 100)
+Text("I refuse to acknowledge you! You're stupid! Stupid\nstupid stupid!\n")
+WaitFrame()
+WaitFrame()
+WaitInput()
+Sprite(4, 4, 4, 4, 0)
+Sound(0, 25, 100)
+TrialCamera(4, 0, 129)
+Voice(4, 1, 0, 55, 100)
+Text("Stupidstupidstupidstupidstupidstupidstupid!!!\n")
+WaitFrame()
+WaitInput()
+Sprite(0, 0, 9, 0, 0)
+TrialCamera(0, 0, 75)
+TextBoxFormat(4)
+Text("<CLT 4>I have to show <CLT><CLT 3>indisputable evidence<CLT><CLT 4> that Leon is\nthe killer. I need to figure it out!\n<CLT>")
+TextBoxFormat(0)
+TextBoxFormat(3)
+TextBoxFormat(0)
+TextBoxFormat(4)
+WaitFrame()
+WaitFrame()
+TextBoxFormat(0)
+WaitInput()
+CheckFlagB(0, 19, 0, 0, 2)
+IfFlagCheck()
+{
+    GoToLabel(1, 246)
+}
+ChangeUi(20, 1)
+GoToLabel(1, 247)
+SetChoiceText(5)
+{
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 247)
+    GoToLabel(1, 248)
+    SetLabel(1, 246)
+    ChangeUi(20, 1)
+    GoToLabel(1, 249)
+}
+SetChoiceText(5)
+{
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 249)
+    SetLabel(1, 248)
+    CheckFlagB(0, 18, 0, 0, 2)
+    IfFlagCheck()
+    {
+        GoToLabel(1, 250)
+    }
+    ChangeUi(33, 1)
+    GoToLabel(1, 251)
+}
+SetChoiceText(1)
+{
+    GoToLabel(0, 0)
+}
+SetChoiceText(2)
+{
+    GoToLabel(0, 1)
+}
+SetChoiceText(3)
+{
+    GoToLabel(0, 2)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 251)
+    SetLabel(1, 250)
+    CheckFlagB(0, 18, 0, 0, 1)
+    IfFlagCheck()
+    {
+        GoToLabel(1, 252)
+    }
+    ChangeUi(33, 21)
+    GoToLabel(1, 253)
+}
+SetChoiceText(1)
+{
+    GoToLabel(0, 0)
+}
+SetChoiceText(2)
+{
+    GoToLabel(0, 1)
+}
+SetChoiceText(3)
+{
+    GoToLabel(0, 2)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 253)
+    SetLabel(1, 252)
+    CheckFlagB(0, 18, 0, 0, 0)
+    IfFlagCheck()
+    {
+        GoToLabel(1, 254)
+    }
+    ChangeUi(33, 31)
+    GoToLabel(1, 255)
+}
+SetChoiceText(1)
+{
+    GoToLabel(0, 0)
+}
+SetChoiceText(2)
+{
+    GoToLabel(0, 1)
+}
+SetChoiceText(3)
+{
+    GoToLabel(0, 2)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 255)
+    SetLabel(1, 254)
+    SetLabel(0, 1)
+    LoadScript(1, 123, 0)
+    StopScript()
+    SetLabel(0, 0)
+    RunScript(1, 199, 0)
+    GoToLabel(0, 20)
+    SetLabel(0, 2)
+    RunScript(1, 198, 0)
+    GoToLabel(0, 20)
+    StopScript()
+    }

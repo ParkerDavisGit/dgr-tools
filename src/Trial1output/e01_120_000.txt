@@ -1,0 +1,735 @@
+0x00(46, 0)
+SetLabel(0, 20)
+ChangeUi(43, 1)
+RunScript(1, 156, 0)
+ChangeUi(4, 1)
+ChangeUi(1, 0)
+Music(255, 120, 0)
+ScreenFade(1, 1, 24)
+ChangeUi(34, 1)
+GoToLabel(1, 244)
+SetChoiceText(0)
+{
+}
+SetChoiceText(1)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 102, 100)
+    Text("I think I'd better take one more look back at the case\nfrom the beginning...\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(2)
+{
+}
+SetChoiceText(3)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 103, 100)
+    Text("Last night, the killer went to the room Sayaka was in.\nIn other words, <CLT 3>my room<CLT>.\n")
+    WaitFrame()
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 104, 100)
+    Text("From what we can tell, Sayaka invited that person\nthere intending to kill them.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(4)
+{
+}
+SetChoiceText(5)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 105, 100)
+    Text("She attacked them with the knife she'd taken from the\nkitchen earlier...\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(10)
+{
+}
+SetChoiceText(11)
+{
+}
+SetChoiceText(12)
+{
+}
+SetChoiceText(13)
+{
+}
+SetChoiceText(14)
+{
+}
+SetChoiceText(15)
+{
+}
+SetChoiceText(16)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 106, 100)
+    Text("...but then something happened that she wasn't\nprepared for.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 107, 100)
+    Text("They grabbed the <CLT 3>fake sword<CLT> I'd put in my room, and\nfought back.\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(20)
+{
+}
+SetChoiceText(21)
+{
+}
+SetChoiceText(22)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 108, 100)
+    Text("During the struggle, a strike from the sword <CLT 3>broke\nSayaka's right wrist<CLT>...\n")
+    TextBoxFormat(3)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(23)
+{
+}
+SetChoiceText(24)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 109, 100)
+    Text("And that's when she lost her grip on the kitchen\nknife.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(25)
+{
+}
+SetChoiceText(30)
+{
+}
+SetChoiceText(31)
+{
+}
+SetChoiceText(32)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 110, 100)
+    Text("Finding herself cornered, Sayaka panicked and ran into\nthe <CLT 3>bathroom<CLT>.\n")
+    WaitFrame()
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(33)
+{
+}
+SetChoiceText(34)
+{
+}
+SetChoiceText(35)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 111, 100)
+    Text("The killer went after her, but couldn't get the\nbathroom door open.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 112, 100)
+    Text("What they didn't know was that my bathroom door <CLT 3>got\nstuck easily<CLT>, and there was a trick to opening it.\n")
+    TextBoxFormat(3)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 113, 100)
+    Text("Sayaka knew about that because I'd told her, but of\ncourse the killer had no way of knowing.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(36)
+{
+}
+SetChoiceText(37)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 114, 100)
+    Text("So instead, the killer forced the door open, took the\nkitchen knife...\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(40)
+{
+}
+SetChoiceText(41)
+{
+}
+SetChoiceText(42)
+{
+}
+SetChoiceText(43)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 115, 100)
+    Text("...and stabbed Sayaka.\n")
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(44)
+{
+}
+SetChoiceText(45)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 116, 100)
+    Text("But with what strength she had remaining, Sayaka left\na <CLT 3>dying message<CLT>...\n")
+    WaitFrame()
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 117, 100)
+    Text("To keep the killer from noticing, she wrote it on <CLT 3>the\nwall behind her<CLT>...\n")
+    TextBoxFormat(3)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(50)
+{
+}
+SetChoiceText(51)
+{
+}
+SetChoiceText(52)
+{
+}
+SetChoiceText(53)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 118, 100)
+    Text("And with that, all her strength was gone.\n")
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(60)
+{
+}
+SetChoiceText(61)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 119, 100)
+    Text("With Sayaka dead, the killer quickly began destroying\nthe evidence.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(62)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 120, 100)
+    Text("First, they took off their <CLT 3>shirt<CLT>, which was covered\nin their victim's blood.\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(63)
+{
+}
+SetChoiceText(64)
+{
+}
+SetChoiceText(65)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 121, 100)
+    Text("Then they took the <CLT 3>lint roller<CLT> in my room and\ncleaned up the entire area.\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 122, 100)
+    Text("They wanted to make sure they got rid of any trace\nthey'd ever been there...\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(70)
+{
+}
+SetChoiceText(71)
+{
+}
+SetChoiceText(72)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 123, 100)
+    Text("Afterwards, the killer headed to the <CLT 3>trash room<CLT> to\ndestroy their bloody shirt.\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 124, 100)
+    Text("They tried to burn the shirt using the <CLT 3>incinerator<CLT>\nthere.\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 125, 100)
+    Text("But the trash room was blocked off by an especially\nsturdy gate, preventing access to the incinerator.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(73)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 126, 100)
+    Text("So they came up with a plan to use Hiro's <CLT 3>crystal\nball<CLT>, which he'd left in the laundry room.\n")
+    TextBoxFormat(3)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(74)
+{
+}
+SetChoiceText(75)
+{
+}
+SetChoiceText(76)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 127, 100)
+    Text("The killer managed to <CLT 3>throw the ball<CLT> through the gap\nin the gate and hit the incinerator's switch.\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 128, 100)
+    Text("For any normal person, that'd be an impossible throw,\nbut the killer had the confidence to take a shot.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 129, 100)
+    Text("And that's because the killer...was the <CLT 3>Ultimate\nBaseball Star<CLT>.\n")
+    TextBoxFormat(3)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(80)
+{
+}
+SetChoiceText(81)
+{
+}
+SetChoiceText(82)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 130, 100)
+    Text("The crystal ball, thrown with absolute precision, hit\nthe switch on the incinerator...\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 131, 100)
+    Text("...which then quickly roared to life.\n")
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(83)
+{
+}
+SetChoiceText(84)
+{
+}
+SetChoiceText(85)
+{
+}
+SetChoiceText(90)
+{
+}
+SetChoiceText(91)
+{
+}
+SetChoiceText(92)
+{
+}
+SetChoiceText(93)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 132, 100)
+    Text("Having destroyed the final piece of evidence, they\nleft the area with, I imagine, a sigh of relief.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 133, 100)
+    Text("But there was one thing they missed...\n")
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(94)
+{
+}
+SetChoiceText(95)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Voice(0, 1, 0, 134, 100)
+    TextBoxFormat(3)
+    Text("<CLT 3>Part of the shirt<CLT> they'd thrown into the fire burnt\naway and fell out of the incinerator.\n")
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    Voice(0, 1, 0, 135, 100)
+    Text("The killer didn't notice this, and so left behind a\npiece of indisputable evidence.\n")
+    WaitFrame()
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(100)
+{
+}
+SetChoiceText(101)
+{
+    0x33(6, 0, 0, 60)
+    ChangeUi(1, 1)
+    Speaker(0)
+    Sound(0, 31, 100)
+    Voice(0, 1, 0, 136, 100)
+    Text("Isn't that right...<CLT 3>Leon<CLT>!?\n")
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    WaitFrame()
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(102)
+{
+}
+SetChoiceText(103)
+{
+}
+SetChoiceText(104)
+{
+}
+SetChoiceText(105)
+{
+}
+SetChoiceText(199)
+{
+    0x33(13, 0, 0, 1)
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>No, I didn't lay out my reasoning right! I need to\nrearrange the events of the case!\n<CLT>")
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    Sound(0, 124, 100)
+    0x33(13, 2, 7, 208)
+    0x33(6, 0, 0, 120)
+    WaitInput()
+    0x33(13, 0, 0, 0)
+    ChangeUi(1, 0)
+    CheckFlagB(0, 13, 0, 0, 0)
+    IfFlagCheck()
+    {
+        GoToLabel(1, 245)
+    }
+    ScreenFade(1, 1, 24)
+    ChangeUi(34, 0)
+    ScreenFade(0, 1, 24)
+    ChangeUi(1, 1)
+    ChangeUi(4, 0)
+    RunScript(1, 198, 0)
+    GoToLabel(0, 20)
+    SetLabel(1, 245)
+}
+SetChoiceText(200)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>My room was the scene of the crime. The incident began\nwhen the killer entered...\n<CLT>")
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(201)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>First, when Sayaka attacked the killer with the knife,\nthey noticed <CLT><CLT 3>something in my room<CLT><CLT 4>.\n<CLT>")
+    WaitFrame()
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(202)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>They used <CLT><CLT 3>that object<CLT><CLT 4> to deflect Sayaka's attack,\nwhich is why that evidence was damaged.\n<CLT>")
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(203)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>After the killer countered Sayaka's attack with an\nattack of their own, what did they do next...?\n<CLT>")
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(204)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>They forced the bathroom door open. The only <CLT><CLT 3>logical\nway<CLT><CLT 4> they could have done that was...\n<CLT>")
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    WaitFrame()
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(205)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>After she was stabbed, Sayaka used the last of her\nstrength to leave something behind...\n<CLT>")
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(206)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>The killer used <CLT><CLT 3>an item<CLT><CLT 4> in my room to help dispose\nof evidence...\n<CLT>")
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(207)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>The <CLT><CLT 3>object the killer threw<CLT><CLT 4> to activate the\nincinerator must have been...\n<CLT>")
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(208)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    Text("<CLT 4><CLT><CLT 3>What the killer threw<CLT><CLT 4> in the incinerator was...\n<CLT>")
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(209)
+{
+    ChangeUi(1, 1)
+    Speaker(0)
+    TextBoxFormat(4)
+    Text("<CLT 4>The <CLT><CLT 3>piece of evidence<CLT><CLT 4> left behind in the trash room\nwas...\n<CLT>")
+    TextBoxFormat(0)
+    TextBoxFormat(3)
+    TextBoxFormat(0)
+    TextBoxFormat(4)
+    WaitFrame()
+    WaitFrame()
+    TextBoxFormat(0)
+    WaitInput()
+    ChangeUi(1, 0)
+}
+SetChoiceText(210)
+{
+}
+SetChoiceText(211)
+{
+}
+SetChoiceText(212)
+{
+}
+SetChoiceText(213)
+{
+}
+SetChoiceText(214)
+{
+}
+SetChoiceText(215)
+{
+}
+SetChoiceText(216)
+{
+}
+SetChoiceText(217)
+{
+}
+SetChoiceText(218)
+{
+}
+SetChoiceText(219)
+{
+}
+SetChoiceText(224)
+{
+    ScreenFade(0, 1, 24)
+    ChangeUi(1, 1)
+    ChangeUi(4, 0)
+    RunScript(1, 199, 0)
+    GoToLabel(0, 20)
+}
+SetChoiceText(225)
+{
+    GoToLabel(0, 21)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 244)
+    SetLabel(0, 21)
+    ScreenFade(0, 1, 24)
+    ChangeUi(1, 1)
+    ChangeUi(4, 0)
+    LoadScript(1, 121, 0)
+    StopScript()
+    StopScript()
+    }

@@ -1,0 +1,234 @@
+0x00(15, 0)
+ScreenFade(1, 0, 1)
+ChangeUi(11, 1)
+ChangeUi(7, 1)
+0x33(0, 0, 0, 0)
+0x33(2, 0, 0, 100)
+0x33(3, 0, 0, 100)
+0x33(15, 0, 0, 25)
+0x33(20, 0, 0, 100)
+SetFlag(13, 32, 0)
+SetFlag(14, 32, 0)
+SetFlag(15, 32, 0)
+SetFlag(0, 4, 1)
+SetFlag(0, 5, 0)
+SetFlag(0, 6, 1)
+SetFlag(0, 7, 1)
+StudentTitleEntry(0, 0, 0)
+StudentTitleEntry(1, 0, 0)
+StudentTitleEntry(2, 0, 0)
+StudentTitleEntry(3, 0, 0)
+StudentTitleEntry(4, 0, 0)
+StudentTitleEntry(5, 0, 0)
+StudentTitleEntry(6, 0, 0)
+StudentTitleEntry(7, 0, 0)
+StudentTitleEntry(8, 0, 0)
+StudentTitleEntry(9, 0, 0)
+StudentTitleEntry(10, 0, 0)
+StudentTitleEntry(11, 0, 0)
+StudentTitleEntry(12, 0, 0)
+StudentTitleEntry(13, 0, 0)
+StudentTitleEntry(14, 0, 0)
+SetFlag(16, 0, 0)
+SetFlag(16, 1, 0)
+SetFlag(16, 2, 0)
+SetFlag(16, 3, 0)
+SetFlag(16, 4, 0)
+SetFlag(16, 5, 0)
+SetFlag(16, 6, 0)
+SetFlag(16, 7, 1)
+SetFlag(16, 8, 0)
+SetFlag(16, 9, 0)
+SetFlag(16, 10, 0)
+SetFlag(16, 11, 0)
+SetFlag(16, 12, 0)
+SetFlag(16, 13, 1)
+SetFlag(16, 14, 0)
+0x33(17, 0, 0, 9)
+ChangeUi(6, 0)
+ChangeUi(9, 0)
+AddTruthBullets(0, 1)
+AddTruthBullets(1, 1)
+AddTruthBullets(2, 1)
+AddTruthBullets(3, 1)
+AddTruthBullets(4, 1)
+AddTruthBullets(5, 1)
+AddTruthBullets(6, 1)
+AddTruthBullets(7, 1)
+AddTruthBullets(8, 1)
+AddTruthBullets(9, 1)
+AddTruthBullets(10, 1)
+AddTruthBullets(11, 1)
+AddTruthBullets(12, 1)
+AddTruthBullets(13, 1)
+AddTruthBullets(14, 1)
+AddTruthBullets(15, 1)
+AddTruthBullets(16, 1)
+AddTruthBullets(17, 2)
+Music(17, 100, 0)
+TrialCamera(0, 0, 247)
+ChangeUi(8, 1)
+0x33(15, 0, 0, 24)
+SetLabel(0, 0)
+ChangeUi(18, 0)
+ChangeUi(18, 4)
+GoToLabel(1, 244)
+SetChoiceText(1)
+{
+    Text("Argument 1-3\n")
+    WaitFrame()
+    GoToLabel(0, 1)
+}
+SetChoiceText(2)
+{
+    Text("Argument 4-6\n")
+    WaitFrame()
+    GoToLabel(0, 2)
+}
+SetChoiceText(3)
+{
+    Text("Argument 7-8\n")
+    WaitFrame()
+    GoToLabel(0, 3)
+}
+SetChoiceText(18)
+{
+}
+SetChoiceText(19)
+{
+    Speaker(31)
+    TrialCamera(0, 0, 20)
+    TextBoxFormat(23)
+    Text("<CLT 23>Where would you like to jump to?\n<CLT>")
+    WaitFrame()
+    TextBoxFormat(0)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 244)
+    SetLabel(0, 1)
+    ChangeUi(18, 0)
+    ChangeUi(18, 4)
+    GoToLabel(1, 245)
+}
+SetChoiceText(1)
+{
+    Text("Jump to Argument 1\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 102, 0)
+    StopScript()
+}
+SetChoiceText(2)
+{
+    Text("Jump to Argument 2\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 104, 0)
+    StopScript()
+}
+SetChoiceText(3)
+{
+    Text("Jump to Argument 3\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 106, 0)
+    StopScript()
+}
+SetChoiceText(18)
+{
+}
+SetChoiceText(19)
+{
+    Speaker(31)
+    TrialCamera(0, 0, 20)
+    TextBoxFormat(23)
+    Text("<CLT 23>Where would you like to jump to?\n<CLT>")
+    WaitFrame()
+    TextBoxFormat(0)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 245)
+    SetLabel(0, 2)
+    ChangeUi(18, 0)
+    ChangeUi(18, 4)
+    GoToLabel(1, 246)
+}
+SetChoiceText(1)
+{
+    Text("Jump to Argument 4\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 110, 0)
+    StopScript()
+}
+SetChoiceText(2)
+{
+    Text("Jump to Argument 5\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 112, 0)
+    StopScript()
+}
+SetChoiceText(3)
+{
+    Text("Jump to Argument 6\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 114, 0)
+    StopScript()
+}
+SetChoiceText(18)
+{
+}
+SetChoiceText(19)
+{
+    Speaker(31)
+    TrialCamera(0, 0, 20)
+    TextBoxFormat(23)
+    Text("<CLT 23>Where would you like to jump to?\n<CLT>")
+    WaitFrame()
+    TextBoxFormat(0)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 246)
+    SetLabel(0, 3)
+    ChangeUi(18, 0)
+    ChangeUi(18, 4)
+    GoToLabel(1, 247)
+}
+SetChoiceText(1)
+{
+    Text("Jump to Argument 7\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 116, 0)
+    StopScript()
+}
+SetChoiceText(2)
+{
+    Text("Jump to Argument 8\n")
+    WaitFrame()
+    ChangeUi(18, 0)
+    LoadScript(1, 118, 0)
+    StopScript()
+}
+SetChoiceText(18)
+{
+}
+SetChoiceText(19)
+{
+    Speaker(31)
+    TrialCamera(0, 0, 20)
+    TextBoxFormat(23)
+    Text("<CLT 23>Where would you like to jump to?\n<CLT>")
+    WaitFrame()
+    TextBoxFormat(0)
+}
+SetChoiceText(255)
+{
+    SetLabel(1, 247)
+    StopScript()
+    }
