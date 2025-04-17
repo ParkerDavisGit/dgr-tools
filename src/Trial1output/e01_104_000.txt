@@ -1,5 +1,5 @@
 0x00(9, 0)
-SetLabel(0, 20)
+SetBabel(0, 20)
 0x33(9, 0, 0, 0)
 SetFlag(0, 10, 0)
 SetFlag(0, 11, 0)
