@@ -5,14 +5,14 @@ pub mod compiler;
 pub mod decompiler;
 
 #[pyfunction]
-fn compile(filename: String) -> eyre::Result<()> {
-    compiler::text_to_byte(filename)?;
+fn compile(filename: String, output_folder: String) -> eyre::Result<()> {
+    compiler::text_to_byte(filename, output_folder)?;
     Ok(())
 }
 
 #[pyfunction]
-fn decompile(filename: String) -> eyre::Result<()> {
-    decompiler::byte_to_text(filename)?;
+fn decompile(filename: String, output_folder: String) -> eyre::Result<()> {
+    decompiler::byte_to_text(filename, output_folder)?;
     Ok(())
 }
 
