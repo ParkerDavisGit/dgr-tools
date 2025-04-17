@@ -10,7 +10,7 @@ use byteorder::{LittleEndian, WriteBytesExt};
 use crate::opcode::Opcode;
 
 
-pub fn text_to_byte(filename: String, output_folder: String) -> eyre::Result<()> {
+pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> {
     log::info!("compiling {}", filename);
 
     let f = File::open(filename.clone())?;
@@ -53,12 +53,11 @@ pub fn text_to_byte(filename: String, output_folder: String) -> eyre::Result<()>
     }
 
     // SECTION 2 [ TEXT SCRIPT OFFSETS ]
-    // First, Buffer to nearest multiple of 16
-    // Extra buffer PROBABLY won't break anything
-    let buffer_amount = if bytes.len() % 16 == 0 {
+    // First, Buffer to nearest multiple of 4
+    let buffer_amount = if bytes.len() % 4 == 0 {
         0
     } else {
-        16 - bytes.len() % 16
+        4 - bytes.len() % 4
     };
     
     for _ in 0..buffer_amount {

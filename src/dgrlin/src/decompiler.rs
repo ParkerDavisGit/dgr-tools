@@ -11,12 +11,12 @@ use byteorder::{ByteOrder, LittleEndian, BigEndian};
 use crate::opcode::Opcode;
 
 
-pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()> {
+pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()> {
     log::info!("decompiling {}", filename);
-    //let mut data = read("data/e00_004_003.bytecode").unwrap().into_iter().peekable();
-    let mut data = read(filename.clone()).unwrap().into_iter().peekable();
-    let mut ops: Vec<Opcode> = Vec::new();
-    let mut idx = 0usize;
+
+    let mut data: std::iter::Peekable<std::vec::IntoIter<u8>> = read(filename.clone()).unwrap().into_iter().peekable();
+    let mut ops:  Vec<Opcode> = Vec::new();
+    let mut idx:  usize = 0;
 
     log::info!("opened file");
 

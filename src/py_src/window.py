@@ -54,7 +54,7 @@ class Window:
         ## CHOOSE INPUT
         if mode == "compile":
             self.logger.info("opening file dialog")
-            input_filenames = tkinter.filedialog.askopenfilename(initialdir = self.last_compile_input,
+            input_filenames = tkinter.filedialog.askopenfilenames(initialdir = self.last_compile_input,
                                             title = "Select a text file!",
                                             filetypes = (("Text files", "*.txt*"),
                                                         ("Text files", "*.txt*")))
