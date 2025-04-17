@@ -10,10 +10,10 @@ use byteorder::{ByteOrder, LittleEndian, BigEndian};
 use crate::opcode::Opcode;
 
 
-pub fn byte_to_text(filename: String) -> eyre::Result<()> {
+pub fn byte_to_text(filename: String, output_folder: String) -> eyre::Result<()> {
     log::info!("decompiling {}", filename);
     //let mut data = read("data/e00_004_003.bytecode").unwrap().into_iter().peekable();
-    let mut data = read(filename).unwrap().into_iter().peekable();
+    let mut data = read(filename.clone()).unwrap().into_iter().peekable();
     let mut ops: Vec<Opcode> = Vec::new();
     let mut idx = 0usize;
 
@@ -54,13 +54,22 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
             "00" => ("0x00", 2u8),
             "02" => ("Text", 2u8),
             "03" => ("TextBoxFormat", 1u8),
+            "04" => ("PostProcessingFilter", 4u8),
+            "05" => ("Movie", 2u8),
             "06" => ("Animation", 8u8),
             "08" => ("Voice", 5u8),
             "09" => ("Music", 3u8),
             "0a" => ("Sound", 3u8),
+            "0c" => ("AddTruthBullets", 2u8),
+            "0d" => ("AddPresents", 3u8),
+            "0e" => ("UnlockSkill", 2u8),
+            "0f" => ("StudentTitleEntry", 3u8),
+            "14" => ("TrialCamera", 3u8),
             "15" => ("LoadMap", 3u8),
             "19" => ("LoadScript", 3u8),
             "1a" => ("StopScript", 0u8),
+            "1b" => ("RunScript", 3u8),
+            "1c" => ("0x1C", 0u8),
             "1e" => ("Sprite", 5u8),
             "1f" => ("ScreenFlash", 7u8),
             "20" => ("SpriteFlash", 5u8),
@@ -72,10 +81,12 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
             "29" => ("CheckObject", 1u8),
             "2a" => ("SetLabel", 2u8),
             "2b" => ("SetChoiceText", 1u8),
+            "2e" => ("CameraShake", 2u8),
             "30" => ("ShowBackground", 3u8),
             "33" => ("0x33", 4u8),
             "34" => ("GoToLabel", 2u8),
             "35" => ("CheckFlagA", 255u8),
+            "36" => ("CheckFlagB", 255u8),
             "3a" => ("WaitInput", 0u8),
             "3b" => ("WaitFrame", 0u8),
             "3c" => ("IfFlagCheck", 0u8),
@@ -91,6 +102,22 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
         // Check Flag A and B can have different numbers of arguments.
         // There is a pattern, but more research needed for confirmation.
         if opcode_info.0 == "CheckFlagA" {
+            let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
+
+            while data.peek().unwrap() != &0x70 {
+                temp_hex_vec.push(data.next().unwrap());
+            }
+
+            ops.push(Opcode {
+                name: opcode_info.0.to_string(),
+                hexcode: temp_hex_vec,
+                text_id: None
+            });
+
+            continue;
+        }
+
+        if opcode_info.0 == "CheckFlagB" {
             let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
             while data.peek().unwrap() != &0x70 {
@@ -144,6 +171,10 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
     // Don't really need this to read the text
     // Recalculated when compiling back into hex
     loop {
+        // For textless .lins
+        if data.peek() == None {
+            break;
+        }
         // This section ends with [0xFF, 0xFE]
         if data.next() == Some(0xFF) { 
             if data.next() == Some(0xFE) {
@@ -151,6 +182,7 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
             }
         }
     }
+    
 
     // SECTION 3 [ THE TEXT SCRIPT ]
     // Lines of text are null-terminated strings seperated by [0xFF, 0xFE]
@@ -183,7 +215,7 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
                 // // BACKSLASH
                 // // Newlines should be written in plaintext
                 // // Converted back into 0x0A when compiling.
-                if next_char == 0x10 as char {
+                if next_char == 0x0A as char {
                     next_string_chars.push('\\');
                     next_string_chars.push('n');
                     continue;
@@ -205,7 +237,8 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
 
     log::info!("decompiled file");
 
-    let mut file = File::create("output/output.txt")?;
+    let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
+    let mut file = File::create(output_folder + "/" + output_filename + ".txt")?;
 
     // AND write it all down
     let mut indentation_level = 0usize;
@@ -293,8 +326,9 @@ pub fn byte_to_text(filename: String) -> eyre::Result<()> {
         }
     }
 
-    if indentation_level > 0 {
-        let _ = write!(file, "}}\n");
+    while indentation_level > 0 {
+        let _ = write!(file, "{}}}\n", "    ".repeat(indentation_level));
+        indentation_level -= 1;
     }
     
     log::info!("wrote to file");

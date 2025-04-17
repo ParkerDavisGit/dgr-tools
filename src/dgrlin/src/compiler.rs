@@ -1,3 +1,4 @@
+use eyre::Context;
 use log;
 
 use std::io::BufReader;
@@ -9,10 +10,10 @@ use byteorder::{LittleEndian, WriteBytesExt};
 use crate::opcode::Opcode;
 
 
-pub fn text_to_byte(filename: String) -> eyre::Result<()> {
+pub fn text_to_byte(filename: String, output_folder: String) -> eyre::Result<()> {
     log::info!("compiling {}", filename);
 
-    let f = File::open(filename)?;
+    let f = File::open(filename.clone())?;
     let reader = BufReader::new(f).lines().flatten();
 
     log::info!("opened file");
@@ -141,7 +142,8 @@ pub fn text_to_byte(filename: String) -> eyre::Result<()> {
 
     // And write to file
     // Luckily, this one is handled well
-    let mut file = File::create("output/output.bin")?;
+    let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
+    let mut file = File::create(output_folder + "/" + output_filename +".lin").wrap_err("Output Directory not found")?;
     let _ = file.write(&bytes[..]);
     
     log::info!("wrote to file");
