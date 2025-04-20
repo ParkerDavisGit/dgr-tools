@@ -104,8 +104,7 @@ pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> 
                 line_in_hex.push(0x00);
                 line_in_hex.push(0x00);
                 line_in_hex
-            }
-            )
+            })
             .collect();
     
     // Then things get weird
@@ -136,7 +135,6 @@ pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> 
     // Update Header
     bytes.splice(12..=15, text_address_vec);
 
-
     log::info!("compiled file");
 
     // And write to file
@@ -144,7 +142,6 @@ pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> 
 
     // Original:
     // let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
-
     let output_filename = match filename.rsplit_once("/") {
         // Grab everything after the last slash in the filepath
         Some((_, output_file_with_extension)) => {
@@ -158,8 +155,10 @@ pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> 
         None => { eyre::bail!("Output Directory not found") }
     };
 
-    let mut file = File::create(output_folder + "/" + output_filename + ".lin").wrap_err("Output Directory not found")?;
-    let _ = file.write(&bytes[..]);
+    let mut file = File::create(output_folder + "/" + output_filename + ".lin")
+        .wrap_err("Output Directory not found")?;
+
+    file.write(&bytes[..]).wrap_err("Could not write to file (Unknown issue)")?;
     
     log::info!("wrote to file");
 
