@@ -14,7 +14,12 @@ use crate::opcode::Opcode;
 pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()> {
     log::info!("decompiling {}", filename);
 
-    let mut data: std::iter::Peekable<std::vec::IntoIter<u8>> = read(filename.clone()).unwrap().into_iter().peekable();
+  //let mut data = read(filename.clone()).unwrap().into_iter().peekable();
+    let mut data = match read(filename.clone()) {
+        Ok(opened_file) => { opened_file.into_iter().peekable() }
+        Err(_) => { eyre::bail!("File \"{}\" could not be opened.", filename) }
+    };
+
     let mut ops:  Vec<Opcode> = Vec::new();
     let mut idx:  usize = 0;
 
@@ -37,6 +42,8 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
     let _ = (data.next(), data.next(), data.next(), data.next());
     let _ = (data.next(), data.next(), data.next(), data.next());
 
+    idx += 16;
+
     // SECTION 1 [ OPCODES ]
     loop {
         if data.peek() == None { // .lin with no text
@@ -47,10 +54,14 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         }
 
         let _ = data.next();
-
         idx += 1;
 
-        let cmd: u8 = data.next().unwrap();
+        let cmd: u8 = match data.next() {
+            Some(op) => { op }
+            None => { eyre::bail!("End of file found prematurly") }
+        };
+        idx += 1;
+
         let opcode_info: (&str, u8) = match vec![cmd].encode_hex::<String>().as_str() {
             "00" => ("0x00", 2u8),
             "02" => ("Text", 2u8),
@@ -96,7 +107,7 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
                 for line in ops {
                     println!("{}", line);
                 }
-                eyre::bail!("Invalid opcode '{}' at line {}", default, idx);
+                eyre::bail!("Invalid opcode '{}' at index {}", default, idx);
             }
         };
 
@@ -106,8 +117,8 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         if opcode_info.0 == "CheckFlagA" {
             let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
-            while data.peek().unwrap() != &0x70 {
-                temp_hex_vec.push(data.next().unwrap());
+            while data.peek() != Some(&0x70) {
+                temp_hex_vec.push(data.next().expect("This better not be called (decompiler CheckFlagA)"));
             }
 
             ops.push(Opcode {
@@ -122,8 +133,8 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         if opcode_info.0 == "CheckFlagB" {
             let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
-            while data.peek().unwrap() != &0x70 {
-                temp_hex_vec.push(data.next().unwrap());
+            while data.peek() != Some(&0x70) {
+                temp_hex_vec.push(data.next().expect("This better not be called (decompiler CheckFlagB)"));
             }
 
             ops.push(Opcode {
@@ -140,8 +151,15 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         if opcode_info.0 == "Text" {
             let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
-            temp_hex_vec.push(data.next().unwrap());
-            temp_hex_vec.push(data.next().unwrap());
+            temp_hex_vec.push(match data.next() {
+                Some(op) => { op }
+                None => { eyre::bail!("End of file found prematurly (0x70, 0x02, ---)") }
+            });
+
+            temp_hex_vec.push(match data.next() {
+                Some(op) => { op }
+                None => { eyre::bail!("End of file found prematurly (0x70, 0x02, 0xXX, ---)") }
+            });
 
             ops.push(Opcode {
                 // The only instance of Big Endian in this entire stupid format.
@@ -159,7 +177,10 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         let mut temp_hex_vec: Vec<u8> = vec![0x70, 0x00];
 
         for _ in 0..opcode_info.1 {
-            temp_hex_vec.push(data.next().unwrap());
+            temp_hex_vec.push(match data.next() {
+                Some(op) => { op }
+                None => { eyre::bail!("End of file found prematurly.") }
+            });
         }
 
         ops.push(Opcode {
@@ -208,8 +229,16 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
             loop {
                 let next_char: char = 
                     String::from_utf16(
-                        &[LittleEndian::read_u16(&[data.next().unwrap(), data.next().unwrap()])]
-                    ).unwrap().chars().next().unwrap();
+                        &[LittleEndian::read_u16(&[
+                            match data.next() {
+                                Some(op) => { op }
+                                None => { eyre::bail!("End of file found prematurly") }
+                            }, 
+                            match data.next() {
+                                Some(op) => { op }
+                                None => { eyre::bail!("End of file found prematurly") }
+                            }
+                        ])]).unwrap().chars().next().unwrap();
                 
                 // let next_char: u8 = data.next().unwrap();
                 // let extra: u8 = data.next().unwrap();
@@ -239,12 +268,25 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
 
     log::info!("decompiled file");
 
-    let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
+    //let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
+    let output_filename = match filename.rsplit_once("/") {
+        // Grab everything after the last slash in the filepath
+        Some((_, output_file_with_extension)) => {
+            // Remove the file extension
+            match output_file_with_extension.split(".").next() {
+                Some(output_filename) => { output_filename }
+                // This'll call if the input file doesn't have an extension
+                None => { output_file_with_extension }
+            }
+        },
+        None => { eyre::bail!("Output Directory not found") }
+    };
+
     let mut file = File::create(output_folder + "/" + output_filename + ".txt").wrap_err("Output Directory not found")?;
     
 
     // AND write it all down
-    let mut indentation_level = 0usize;
+    let mut indent_level = 0usize;
     let mut flag_check: bool  = false;
     let mut in_choice_text: bool = false;
     let mut line_idx = 1usize;
@@ -253,11 +295,11 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
     for line in ops {
         // Flag check runs the next line only if it passes
         if flag_check {
-            write!(file, "{}{{\n"  , indent(indentation_level))
+            write!(file, "{}{{\n"  , indent(indent_level))
                 .wrap_err(format!("Could not write line {}", line_idx))?;
-            write!(file, "{}{}\n"  , indent(indentation_level+1), line)
+            write!(file, "{}{}\n"  , indent(indent_level+1), line)
                 .wrap_err(format!("Could not write line {}", line_idx+1))?;
-            write!(file, "{}}}\n"  , indent(indentation_level))
+            write!(file, "{}}}\n"  , indent(indent_level))
                 .wrap_err(format!("Could not write line {}", line_idx+2))?;
 
             line_idx += 3;
@@ -267,42 +309,42 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         
         match line.name.as_str() {
             "CheckCharacter" => {
-                while indentation_level > 0 {
-                    indentation_level -= 1;
-                    write!(file, "{}}}\n", indent(indentation_level))
+                while indent_level > 0 {
+                    indent_level -= 1;
+                    write!(file, "{}}}\n", indent(indent_level))
                         .wrap_err(format!("Could not write line {}", line_idx))?;
                     line_idx += 1;
                     in_choice_text = false;
                 }
                 
-                write!(file, "{}{}\n", indent(indentation_level), line)
+                write!(file, "{}{}\n", indent(indent_level), line)
                     .wrap_err(format!("Could not write line {}", line_idx))?;
-                write!(file, "{}{{\n", indent(indentation_level))
+                write!(file, "{}{{\n", indent(indent_level))
                     .wrap_err(format!("Could not write line {}", line_idx+1))?;
 
                 line_idx += 2;
-                indentation_level += 1;
+                indent_level += 1;
             }
             "CheckObject" => {
-                while indentation_level > 0 {
-                    indentation_level -= 1;
-                    write!(file, "{}}}\n", indent(indentation_level))
+                while indent_level > 0 {
+                    indent_level -= 1;
+                    write!(file, "{}}}\n", indent(indent_level))
                         .wrap_err(format!("Could not write line {}", line_idx))?;
 
                     line_idx += 1;
                     in_choice_text = false;
                 }
 
-                write!(file, "{}{}\n", indent(indentation_level), line)
+                write!(file, "{}{}\n", indent(indent_level), line)
                     .wrap_err(format!("Could not write line {}", line_idx))?;
-                write!(file, "{}{{\n", indent(indentation_level))
+                write!(file, "{}{{\n", indent(indent_level))
                     .wrap_err(format!("Could not write line {}", line_idx+1))?;
                 
                 line_idx += 2;
-                indentation_level += 1;
+                indent_level += 1;
             }
             "IfFlagCheck" => {
-                write!(file, "{}{}\n", indent(indentation_level), line)
+                write!(file, "{}{}\n", indent(indent_level), line)
                     .wrap_err(format!("Could not write line {}", line_idx))?;
 
                 line_idx += 1;
@@ -311,8 +353,8 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
 
             "SetChoiceText" => {
                 if in_choice_text {
-                    indentation_level -= 1;
-                    write!(file, "{}}}\n", indent(indentation_level))
+                    indent_level -= 1;
+                    write!(file, "{}}}\n", indent(indent_level))
                         .wrap_err(format!("Could not write line {}", line_idx))?;
                     
                     line_idx += 1;
@@ -321,26 +363,34 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
                     in_choice_text = true;
                 }
 
-                write!(file, "{}{}\n", indent(indentation_level), line)
+                write!(file, "{}{}\n", indent(indent_level), line)
                     .wrap_err(format!("Could not write line {}", line_idx))?;
-                write!(file, "{}{{\n", indent(indentation_level))
+                write!(file, "{}{{\n", indent(indent_level))
                     .wrap_err(format!("Could not write line {}", line_idx+1))?;
 
                 line_idx += 2;
-                indentation_level += 1;
+                indent_level += 1;
             }
 
             "Text" => {
-                let output = text_entries.get(line.text_id.unwrap() as usize);
+                let output = match line.text_id {
+                    Some(text_id) => { text_entries.get(text_id as usize) }
+                    // This shouldn't be called, as to get to this point, 
+                    // a text opcode object should always be instantiated with a text id.
+                    // This one's the consiquence of my actions and will probably
+                    // Be out of here after my opcode refactor.
+                    None => { eyre::bail!("Text opcode does not contain valid text id.") }
+                };
+
                 match output {
                     None => {
-                        log::error!("Text line with id '{}' not found.", line.text_id.unwrap());
+                        log::error!("Text line with id '{}' not found.", line.text_id.expect("Text id lost between line 376 and now."));
                         continue;
                     }
-                    _ => { write!(
+                    Some(text_line) => { write!(
                         file, "{}Text(\"{}\")\n", 
-                        indent(indentation_level), 
-                        output.unwrap())
+                        indent(indent_level), 
+                        text_line)
                             .wrap_err(format!("Could not write line {}", line_idx))?;
 
                         line_idx += 1;
@@ -348,16 +398,16 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
                 }
             }
             _ => {
-                write!(file, "{}{}\n", indent(indentation_level), line)
+                write!(file, "{}{}\n", indent(indent_level), line)
                     .wrap_err(format!("Could not write line {}", line_idx+1))?;
                 line_idx += 1;
             }
         }
     }
 
-    while indentation_level > 0 {
-        indentation_level -= 1;
-        let _ = write!(file, "{}}}\n", indent(indentation_level));
+    while indent_level > 0 {
+        indent_level -= 1;
+        let _ = write!(file, "{}}}\n", indent(indent_level));
     }
     
     log::info!("wrote to file");

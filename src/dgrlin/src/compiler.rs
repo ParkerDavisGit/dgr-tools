@@ -141,7 +141,23 @@ pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> 
 
     // And write to file
     // Luckily, this one is handled well
-    let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
+
+    // Original:
+    // let output_filename = filename.rsplit_once("/").unwrap().1.split(".").next().unwrap();
+
+    let output_filename = match filename.rsplit_once("/") {
+        // Grab everything after the last slash in the filepath
+        Some((_, output_file_with_extension)) => {
+            // Remove the file extension
+            match output_file_with_extension.split(".").next() {
+                Some(output_filename) => { output_filename }
+                // This'll call if the input file doesn't have an extension
+                None => { output_file_with_extension }
+            }
+        },
+        None => { eyre::bail!("Output Directory not found") }
+    };
+
     let mut file = File::create(output_folder + "/" + output_filename + ".lin").wrap_err("Output Directory not found")?;
     let _ = file.write(&bytes[..]);
     
