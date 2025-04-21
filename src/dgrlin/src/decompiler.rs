@@ -28,14 +28,15 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
     // SECTION 0 [ HEADER ]
     if data.next() != Some(0x02) {
         log::error!("Not a valid .lin file");
-        //return Err(eyre::Report::new(""));
+        eyre::bail!("Not a valid .lin file (Header Inconsistency)");
     }
     let _ = (data.next(), data.next(), data.next());
 
     if data.next() != Some(0x10) {
         log::error!("Not a valid .lin file");
-        return Ok(())
+        eyre::bail!("Not a valid .lin file (Header Inconsistency)");
     }
+    
     let _ = (data.next(), data.next(), data.next());
 
     // I shouldn't need the addresses provided here
