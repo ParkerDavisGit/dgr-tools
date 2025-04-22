@@ -78,7 +78,7 @@ class Window:
             self.update_log("No folder selected!")
             return
         
-        self.last_compile_output = output_folder.rsplit("/", 1)[0]
+        self.last_compile_output = output_folder.rsplit("/", 1)[1]
 
         for input_filename in input_filenames:
             try:
@@ -112,7 +112,7 @@ class Window:
         output_folder = tkinter.filedialog.askdirectory(initialdir = self.last_decompile_output,
                                         title = "Select an output folder!")
         
-        self.last_decompile_output = output_folder.rsplit("/", 1)[0]
+        self.last_decompile_output = output_folder.rsplit("/", 1)[1]
         
         if output_folder == "":
             self.logger.warning("user did not select output folder")

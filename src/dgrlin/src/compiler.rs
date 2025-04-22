@@ -164,3 +164,9 @@ pub fn compile_lin(filename: String, output_folder: String) -> eyre::Result<()> 
 
     Ok(())
 }
+
+
+
+
+
+//// [ TESTS ] ////

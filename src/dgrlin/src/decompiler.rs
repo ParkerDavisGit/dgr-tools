@@ -421,3 +421,9 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
 fn indent(amount: usize) -> String {
     "    ".repeat(amount)
 }
+
+
+
+
+
+//// [ TESTS ] ////

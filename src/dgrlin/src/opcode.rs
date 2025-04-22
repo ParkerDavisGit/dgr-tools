@@ -4,7 +4,7 @@ use log;
 
 use byteorder::{BigEndian, WriteBytesExt};
 
-
+#[derive(PartialEq, Debug)]
 pub struct Opcode {
     pub name: String,
     pub hexcode: Vec<u8>,
@@ -140,4 +140,102 @@ impl fmt::Display for Opcode {
         let _ = write!(f, "{})", self.hexcode.last().unwrap());
         Ok(())
     }
+}
+
+
+
+
+
+
+
+//// [ TESTS ] ////
+#[cfg(test)]
+mod tests {
+    use hamcrest2::prelude::*;
+
+    use super::Opcode;
+
+    #[test]
+    fn test_try_from_string_basic_1() {
+        let opcode_1: (Option<Opcode>, Option<String>) 
+            = Opcode::try_from_string("WaitFrame()".to_string(), 0);
+        
+        assert_that!(opcode_1.0.unwrap(), equal_to(
+            Opcode {
+                name: "WaitFrame".to_string(),
+                hexcode: vec![0x70, 0x3B],
+                text_id: None,
+            }
+        ))
+    }
+
+    #[test]
+    fn test_try_from_string_basic_2() {
+        let opcode_1: (Option<Opcode>, Option<String>) 
+            = Opcode::try_from_string("Text(\"George\")".to_string(), 260);
+        
+        assert_that!(opcode_1.0.unwrap(), equal_to(
+            Opcode {
+                name: "Text".to_string(),
+                hexcode: vec![0x70, 0x02, 0x01, 0x04],
+                text_id: None,
+            }
+        ));
+
+        assert_that!(opcode_1.1, equal_to(Some("George".to_string())));
+    }
+
+    #[test]
+    fn test_try_from_string_basic_3() {
+        let opcode_1: (Option<Opcode>, Option<String>) 
+            = Opcode::try_from_string("WaitFrame(0, 1, 2, 3, 4)".to_string(), 0);
+        
+
+        // Writing these tests helped me realize how flawed this is.
+        // I a lot more error checking to tell the user what's wrong with their file.
+        // That was supposed to be the point of this project, after all...
+        assert_that!(opcode_1.0.unwrap(), equal_to(
+            Opcode {
+                name: "WaitFrame".to_string(),
+                hexcode: vec![0x70, 0x3B, 0x00, 0x01, 0x02, 0x03, 0x04],
+                text_id: None,
+            }
+        ))
+    }
+
+    
+
+    #[test]
+    #[should_panic]
+    fn test_try_from_string_broken_1() {
+        #[allow(unused_variables)]
+        let opcode_1: (Option<Opcode>, Option<String>) 
+            = Opcode::try_from_string("WaitFrame".to_string(), 0);
+    }
+
+    #[test]
+    //#[should_panic]
+    fn test_try_from_string_broken_2() {
+        let opcode_1: (Option<Opcode>, Option<String>) 
+            = Opcode::try_from_string("Jimmy'sOpcode()".to_string(), 0);
+        
+        //0xFE is the bad opcode return
+        assert_that!(opcode_1.0.unwrap().hexcode[1], equal_to(0xFE));
+    }
+
+    
+    //#[should_panic]
+    // THIS IS A FAIL POINT.
+    // IT SHOULD BE MADE TO PANIC
+    // But that is something to fix when I change this back into an enum.
+    #[test]
+    fn test_try_from_string_broken_3() {
+        #[allow(unused_variables)]
+        let opcode_1: (Option<Opcode>, Option<String>) 
+            = Opcode::try_from_string("What the heck si going on(1,| 2,, 3)".to_string(), 0);
+
+            assert_that!(opcode_1.0.unwrap().hexcode, equal_to(vec![0x70, 0xFE, 0x01, 0x03]));
+    }
+
+    
 }
