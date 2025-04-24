@@ -1,8 +1,10 @@
 /src/target
 /src/output
+/src/build
 
 /output
 /target
+/build
 
 */*/output
 */*/target
