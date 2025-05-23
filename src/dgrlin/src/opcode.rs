@@ -11,63 +11,6 @@ pub struct Opcode {
     pub text_id: Option<u16>
 }
 
-// Static Functions
-impl Opcode {
-    // Returns opcode name to be written to file, and the amount of arguments it has.
-    pub fn get_opcode_info<'file>(opcode: u8) -> eyre::Result<(&'file str, u8)> {
-        let info: (&str, u8) = match opcode {
-            0x00 => ("0x00", 2u8),
-            0x01 => ("LoadSprite", 3u8),
-            0x02 => ("Text", 2u8),
-            0x03 => ("TextBoxFormat", 1u8),
-            0x04 => ("PostProcessingFilter", 4u8),
-            0x05 => ("Movie", 2u8),
-            0x06 => ("Animation", 8u8),
-            0x08 => ("Voice", 5u8),
-            0x09 => ("Music", 3u8),
-            0x0a => ("Sound", 3u8),
-            0x0b => ("SoundB", 2u8),
-            0x0c => ("AddTruthBullets", 2u8),
-            0x0d => ("AddPresents", 3u8),
-            0x0e => ("UnlockSkill", 2u8),
-            0x0f => ("StudentTitleEntry", 3u8),
-            0x11 => ("0x11", 4u8),   // "Relationship setting?"  - Morgana-X, Github
-            0x14 => ("TrialCamera", 3u8),
-            0x15 => ("LoadMap", 3u8),
-            0x19 => ("LoadScript", 3u8),
-            0x1a => ("StopScript", 0u8),
-            0x1b => ("RunScript", 3u8),
-            0x1c => ("0x1C", 0u8),
-            0x1e => ("Sprite", 5u8),
-            0x1f => ("ScreenFlash", 7u8),
-            0x20 => ("SpriteFlash", 5u8),
-            0x21 => ("Speaker", 1u8),
-            0x22 => ("ScreenFade", 3u8),
-            0x23 => ("ObjectState", 5u8),
-            0x25 => ("ChangeUi", 2u8),
-            0x26 => ("SetFlag", 3u8),
-            0x27 => ("CheckCharacter", 1u8),
-            0x29 => ("CheckObject", 1u8),
-            0x2a => ("SetLabel", 2u8),
-            0x2b => ("SetChoiceText", 1u8),
-            0x2e => ("CameraShake", 2u8),
-            0x30 => ("ShowBackground", 3u8),
-            0x33 => ("0x33", 4u8),
-            0x34 => ("GoToLabel", 2u8),
-            0x35 => ("CheckFlagA", 255u8),
-            0x36 => ("CheckFlagB", 255u8),
-            0x3a => ("WaitInput", 0u8),
-            0x3b => ("WaitFrame", 0u8),
-            0x3c => ("IfFlagCheck", 0u8),
-            _default => {
-                eyre::bail!("");
-            }
-        };
-
-        return Ok(info)
-    }
-}
-
 impl Opcode {
     pub fn to_hex(&self) -> Vec<u8> {
         self.hexcode.clone()
@@ -119,7 +62,6 @@ impl Opcode {
         
         let opcode: u8 = match opcode_text {
             "0x00"             => 0x00,
-            "LoadSprite"       => 0x01,
             "TextBoxFormat"    => 0x03,
             "PostProcessingFilter" => 0x04,
             "Movie"            => 0x05,
@@ -132,7 +74,6 @@ impl Opcode {
             "AddPresents"      => 0x0D,
             "UnlockSkill"      => 0x0E,
             "StudentTitleEntry"=> 0x0F,
-            "0x11"             => 0x11,
             "TrialCamera"      => 0x14,
             "LoadMap"          => 21u8,
             "LoadScript"       => 0x19,
@@ -142,9 +83,8 @@ impl Opcode {
             "Sprite"           => 30u8,
             "ScreenFlash"      => 31u8,
             "SpriteFlash"      => 32u8,
-            "Speaker"          => 0x21,
-            "ScreenFade"       => 0x22,
-            "ObjectState"      => 0x23,
+            "Speaker"          => 33u8,
+            "ScreenFade"       => 34u8,
             "ChangeUi"         => 37u8,
             "SetFlag"          => 38u8,
             "CheckCharacter"   => 39u8,
