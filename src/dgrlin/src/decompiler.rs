@@ -63,54 +63,14 @@ pub fn decompile_lin(filename: String, output_folder: String) -> eyre::Result<()
         };
         idx += 1;
 
-        let opcode_info: (&str, u8) = match vec![cmd].encode_hex::<String>().as_str() {
-            "00" => ("0x00", 2u8),
-            "02" => ("Text", 2u8),
-            "03" => ("TextBoxFormat", 1u8),
-            "04" => ("PostProcessingFilter", 4u8),
-            "05" => ("Movie", 2u8),
-            "06" => ("Animation", 8u8),
-            "08" => ("Voice", 5u8),
-            "09" => ("Music", 3u8),
-            "0a" => ("Sound", 3u8),
-            "0b" => ("SoundB", 2u8),
-            "0c" => ("AddTruthBullets", 2u8),
-            "0d" => ("AddPresents", 3u8),
-            "0e" => ("UnlockSkill", 2u8),
-            "0f" => ("StudentTitleEntry", 3u8),
-            "14" => ("TrialCamera", 3u8),
-            "15" => ("LoadMap", 3u8),
-            "19" => ("LoadScript", 3u8),
-            "1a" => ("StopScript", 0u8),
-            "1b" => ("RunScript", 3u8),
-            "1c" => ("0x1C", 0u8),
-            "1e" => ("Sprite", 5u8),
-            "1f" => ("ScreenFlash", 7u8),
-            "20" => ("SpriteFlash", 5u8),
-            "21" => ("Speaker", 1u8),
-            "22" => ("ScreenFade", 3u8),
-            "25" => ("ChangeUi", 2u8),
-            "26" => ("SetFlag", 3u8),
-            "27" => ("CheckCharacter", 1u8),
-            "29" => ("CheckObject", 1u8),
-            "2a" => ("SetLabel", 2u8),
-            "2b" => ("SetChoiceText", 1u8),
-            "2e" => ("CameraShake", 2u8),
-            "30" => ("ShowBackground", 3u8),
-            "33" => ("0x33", 4u8),
-            "34" => ("GoToLabel", 2u8),
-            "35" => ("CheckFlagA", 255u8),
-            "36" => ("CheckFlagB", 255u8),
-            "3a" => ("WaitInput", 0u8),
-            "3b" => ("WaitFrame", 0u8),
-            "3c" => ("IfFlagCheck", 0u8),
-            default => {
-                for line in ops {
-                    println!("{}", line);
-                }
-                eyre::bail!("Invalid opcode '{}' at index {}", default, idx);
+
+        let opcode_info = match Opcode::get_opcode_info(cmd) {
+            Ok(info) => info,
+            Err(_) => {
+                eyre::bail!("Invalid opcode '{}' at index {}", cmd, idx);
             }
         };
+
 
         // Special Cases
         // Check Flag A and B can have different numbers of arguments.
