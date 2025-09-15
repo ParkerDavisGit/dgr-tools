@@ -2,6 +2,7 @@ import dgrlin
 
 import logging
 import sys
+import os
 
 import rust_interfacer
 
@@ -9,8 +10,15 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog
 
+import configparser
+
 class Window:
     def __init__(self):
+        ### Configuration Setup
+        self.config = configparser.ConfigParser()
+        self.config.read("config.ini")
+        print()
+
         ### Variables
         self.last_compile_input  = "./data"
         self.last_compile_output = "./output"
@@ -24,7 +32,7 @@ class Window:
         ### Main Window
         self.root = tk.Tk()
         self.root.resizable(width=False, height=False)
-        self.root.geometry("800x500")
+        self.root.geometry(f"{self.ConfigSectionMap("WindowSettings")['windowwidth']}x{self.ConfigSectionMap("WindowSettings")['windowheight']}")
         self.root.title("DGR TOOLS")
         self.logger.info("window created")
 
@@ -46,6 +54,25 @@ class Window:
         self.file_log.place(x=0, y=0)
         self.logger.info("widgets created")
 
+        self.tree = ttk.Treeview(self.root)
+        self.tree.place(x=600, y=50)
+        # Inserted at the root, program chooses id:
+        # self.tree.insert('', 'end', 'widgets', text='Widget Tour')
+        
+        # # Same thing, but inserted as first child:
+        # tree.insert('', 0, 'gallery', text='Applications')
+
+        # # Treeview chooses the id:
+        # id = tree.insert('', 'end', text='Tutorial')
+
+        # # Inserted underneath an existing node:
+        # tree.insert('widgets', 'end', text='Canvas')
+        # tree.insert(id, 'end', text='Tree')
+
+        # tree.insert('', 'end', text='button', tags=('ttk', 'simple'))
+        # tree.tag_configure('ttk', background='yellow')
+        self.tree.bind('<Double-1>', self.itemClicked)
+
         ###
         self.log_frame_lines = []
 
@@ -53,6 +80,10 @@ class Window:
 
         self.root.mainloop()
     
+    def itemClicked(self, x):
+        print(x.widget.focus())
+        self.beginLoadOfFileTree()
+        
 
     def compile_lin(self):
         ## CHOOSE INPUT
@@ -149,3 +180,38 @@ class Window:
         self.log_frame_lines.insert(0, new_line)
 
         self.file_log.configure(text="\n".join(self.log_frame_lines))
+    
+    ## ConfigParser helper function taken from the python website.
+    def ConfigSectionMap(self, section):
+        dict1 = {}
+        options = self.config.options(section)
+        for option in options:
+            try:
+                dict1[option] = self.config.get(section, option)
+                if dict1[option] == -1:
+                    print("skip: %s" % option)
+            except:
+                print("exception on %s!" % option)
+                dict1[option] = None
+        return dict1
+
+
+    def beginLoadOfFileTree(self):
+        starting_folder = tkinter.filedialog.askdirectory(initialdir = ".",
+                                        title = "Select a folder to load!")
+        
+        if starting_folder == "":
+            self.logger.warning("user did not select a folder to load")
+            self.update_log("No folder selected!")
+            return
+        
+        self.loadFileTreeRecursion(starting_folder, '')
+
+    
+    def loadFileTreeRecursion(self, folder_path, parent_id):
+        files = os.listdir(folder_path)
+
+        for file in files:
+            self.tree.insert(parent_id, 'end', parent_id + '/' + file, text = file)
+            if "." not in file:
+                self.loadFileTreeRecursion(folder_path + '/' + file, parent_id + '/' + file)
