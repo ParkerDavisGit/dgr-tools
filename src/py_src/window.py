@@ -44,18 +44,20 @@ class Window:
         #main_frame.place(x=0, y=0)
 
         #self.header_label = ttk.Label(self.root, text="Gello Gorld!", width=100).place(x = 350, y = 25)
-        self.compile_button   = tk.Button(self.root, text="Compile",   width=18, height=3, command=lambda:  self.compile_lin()).place(x = 25, y = 75)
-        self.decompile_button = tk.Button(self.root, text="Decompile", width=18, height=3, command=lambda: self.decompile_lin()).place(x = 25, y = 150)
+        self.compile_button   = tk.Button(self.root, text="Compile",   width=18, height=3, command=lambda:  self.compile_lin()).grid(row=0, column=0, padx=(50, 0), pady=(50, 0))
+        self.decompile_button = tk.Button(self.root, text="Decompile", width=18, height=3, command=lambda: self.decompile_lin()).grid(row=0, column=1, padx=(25, 0), pady=(50, 0))
 
-        self.log_frame = ttk.Frame(self.root, width=400, height=200)
-        self.log_frame.place(x=200, y=200)
+        self.log_frame = ttk.Frame(self.root, width=300, height=200)
+        self.log_frame.grid(row=1, column=0, padx=(50, 0), pady=(50, 0), columnspan=2)
 
         self.file_log = tk.Label(self.log_frame, text="", justify="left")
         self.file_log.place(x=0, y=0)
         self.logger.info("widgets created")
 
-        self.tree = ttk.Treeview(self.root)
-        self.tree.place(x=600, y=50)
+        self.tree = ttk.Treeview(self.root, height=35)
+        self.tree.grid(row=0, column=2, padx=(150, 0), pady=(50, 0), rowspan=20)
+        self.tree.column('#0', width=800)
+
         # Inserted at the root, program chooses id:
         # self.tree.insert('', 'end', 'widgets', text='Widget Tour')
         
