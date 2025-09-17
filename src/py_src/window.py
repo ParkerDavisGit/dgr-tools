@@ -57,22 +57,12 @@ class Window:
         self.tree = ttk.Treeview(self.root, height=35)
         self.tree.grid(row=0, column=2, padx=(150, 0), pady=(50, 0), rowspan=20)
         self.tree.column('#0', width=800)
+        self.tree.bind("<Button-3>", self.tree_right_click)
 
-        # Inserted at the root, program chooses id:
-        # self.tree.insert('', 'end', 'widgets', text='Widget Tour')
-        
-        # # Same thing, but inserted as first child:
-        # tree.insert('', 0, 'gallery', text='Applications')
+        self.popup_menu = tkinter.Menu(self.root, tearoff=0)
+        self.popup_menu.add_command(label="Delete",
+                                    command=self.pain)
 
-        # # Treeview chooses the id:
-        # id = tree.insert('', 'end', text='Tutorial')
-
-        # # Inserted underneath an existing node:
-        # tree.insert('widgets', 'end', text='Canvas')
-        # tree.insert(id, 'end', text='Tree')
-
-        # tree.insert('', 'end', text='button', tags=('ttk', 'simple'))
-        # tree.tag_configure('ttk', background='yellow')
         self.tree.bind('<Double-1>', self.itemClicked)
 
         ###
@@ -85,7 +75,18 @@ class Window:
     def itemClicked(self, x):
         print(x.widget.focus())
         self.beginLoadOfFileTree()
-        
+    
+
+    def tree_right_click(self, event):
+        iid = self.tree.identify_row(event.y)
+        print(iid)
+        if iid:
+            # mouse pointer over item
+            self.tree.selection_set(iid)
+        self.popup_menu.tk_popup(event.x_root, event.y_root, 0)
+    
+    def pain(self):
+        print("Gello")
 
     def compile_lin(self):
         ## CHOOSE INPUT
